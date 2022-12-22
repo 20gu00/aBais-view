@@ -28,6 +28,7 @@ const routes = [
         component: Layout,
         children: [
             {
+                //路由信息
                 path: "/home",
                 name: "概览",
                 icon: "fund-outlined",

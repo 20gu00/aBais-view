@@ -12,6 +12,7 @@
     height: 100vh;
     /* 最小宽度  拉伸  像素*/
     min-width: 1425px;
+    /*html和body的y轴滚轴隐藏,但是不影响main和侧边栏的滚轴*/
     overflow-y: hidden;
   }
   #nprogress .bar {
