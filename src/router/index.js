@@ -6,16 +6,23 @@ import {createRouter, createWebHistory} from 'vue-router'
 import NProgress from 'nprogress'
 //带样式的组件需要导入css样式
 import 'nprogress/nprogress.css'
-//引入layout布局
+//导入整体布局Layout
 import Layout from "@/layout/Layout"
+//导入jwt token组件
+import jwt from 'jsonwebtoken'
 
 //定义路由规则
 const routes = [
     {
         path: '/',
-        redirect: '/home'  //重定向
+        redirect: '/home' //重定向
     },
     {
+        path: '/login',  //url路径
+        component: () => import('@/views/common/Login.vue'),  //视图组件
+        meta: {title: "登录", requireAuth: false},  //meta元信息
+    },
+    {   
         path: "/home",
         //引入布局组件(head 侧边栏 main)(401等特殊页面不需要)
         component: Layout,
@@ -24,9 +31,9 @@ const routes = [
                 path: "/home",
                 name: "概览",
                 icon: "fund-outlined",
-                meta: {title: "概览"},
+                meta: {title: "概览", requireAuth: true},
                 //真正的页面内容，会显示在布局的main部分
-                component: () => import('@/views/home/Home.vue') 
+                component: () => import('@/views/home/Home.vue'),
             }
         ]
     },
@@ -88,14 +95,95 @@ const routes = [
             },
         ]
     },
+    {
+        path: '/workload/pod/terminal',  //url路径
+        component: () => import('@/views/workload/PodTerminal.vue'),  //视图组件
+        meta: {title: "终端", requireAuth: false},  //meta元信息
+    },
+    {
+        path: '/workload/pod/log',  //url路径
+        component: () => import('@/views/workload/PodLog.vue'),  //视图组件
+        meta: {title: "日志", requireAuth: false},  //meta元信息
+    },
+    {
+        path: "/loadbalance",
+        name: "负载均衡",
+        component: Layout,
+        icon: "partition-outlined",
+        children: [
+            {
+                path: "/loadbalance/ingress",
+                name: "Ingress",
+                meta: {title: "Ingress", requireAuth: true},
+                component: () => import('@/views/loadbalance/Ingress.vue'),
+            },
+            {
+                path: "/loadbalance/service",
+                name: "Service",
+                meta: {title: "Service", requireAuth: true},
+                component: () => import('@/views/loadbalance/Service.vue'),
+            }
+        ]
+    },
+    {
+        path: "/storage",
+        name: "存储配置",
+        component: Layout,
+        icon: "book-outlined",
+        children: [
+            {
+                path: "/storage/configmap",
+                name: "Configmap",
+                meta: {title: "Configmap", requireAuth: true},
+                component: () => import('@/views/storage/Configmap.vue'),
+            },
+            {
+                path: "/storage/secret",
+                name: "Secret",
+                meta: {title: "Secret", requireAuth: true},
+                component: () => import('@/views/storage/Secret.vue'),
+            },
+            {
+                path: "/storage/pvc",
+                name: "PVC",
+                meta: {title: "PVC", requireAuth: true},
+                component: () => import('@/views/storage/PVC.vue'),
+            }
+        ]
+    },
+    {
+        path: '/helmstore',
+        name: "Helm应用",
+        component: Layout,
+        icon: "appstore-outlined",
+        children: [
+            {
+                path: "/helmstore/release",
+                name: "Release",
+                meta: {title: "Release", requireAuth: true},
+                component: () => import('@/views/helmstore/Release.vue'),
+            },
+            {
+                path: "/helmstore/chartrepo",
+                name: "Chart仓库",
+                meta: {title: "Chart仓库", requireAuth: true},
+                component: () => import('@/views/helmstore/ChartRepo.vue'),
+            }
+        ]
+    },
 ]
 
 //创建路由实例
 const router = createRouter({
+    /**
+     * hash模式：createWebHashHistory，
+     * history模式：createWebHistory
+     */
     history: createWebHistory(),
     routes
 })
 
+//递增进度条，这将获取当前状态值并添加0.2直到状态为0.994
 //定义进度条
 //进度条打满
 NProgress.inc(100)
@@ -110,25 +198,44 @@ NProgress.configure({ easing: 'ease', speed: 600, showSpinner: false })
 //进度条参与过程 页面加载时和页面加载完成之间
 //页面打开之前
 //to去那个页面 from从那个页面来
+//router.beforeEach（）一般用来做一些进入页面的限制。比如没有登录，就不能进入某些
+//页面，只有登录了之后才有权限查看某些页面。。。说白了就是路由拦截。
+//to 要去到某个页面的属性
+//from 从哪个页面来的属性
+//next 处理路由跳转及放行
 router.beforeEach((to, from, next) => {
-    //启动进度条
+    // 启动进度条
     NProgress.start()
 
-    //设置头部title
+    // 设置头部title
     if (to.meta.title) {
         document.title = to.meta.title
-    } else {  //如果该页面没有设置title
+    } else {
         document.title = "kubeA"
     }
     //放行
     next()
 })
 
+//使用钩子函数对路由进行权限跳转
+router.beforeEach((to, from, next) => {
+    //验证jwt token是否合法
+    jwt.verify(localStorage.getItem('token'), 'adoodevops', function (err) {
+        if (to.path === '/login') {
+            next()
+        } else if (err) {
+            next('/login');
+        } else {
+            next();
+        }
+    });
+});
+
 //页面加载完成后
 router.afterEach(() => {
-    //关闭进度条
+    // 关闭进度条
     NProgress.done()
 })
 
-//暴露给main.js使用
+// 抛出路由实例, 在 main.js 中引用
 export default router
