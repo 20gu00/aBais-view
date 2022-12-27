@@ -1,5 +1,3 @@
-//初始化路由的工作
-
 //导入router的路由模式
 import {createRouter, createWebHistory} from 'vue-router'
 //导入进度条组件
@@ -20,18 +18,20 @@ const routes = [
     {
         path: '/login',  //url路径
         component: () => import('@/views/common/Login.vue'),  //视图组件
-        meta: {title: "登录", requireAuth: false},  //meta元信息
+        meta: {title: "登录", requireAuth: false},  //meta元信息,登录不需要token验证
     },
     {   
         path: "/home",
         //引入布局组件(head 侧边栏 main)(401等特殊页面不需要)
         component: Layout,
+        //子路由
         children: [
             {
                 //路由信息
                 path: "/home",
                 name: "概览",
-                icon: "fund-outlined",
+                //实心描线双色filled outlined twoTone
+                icon: "dashboar-twoTone",
                 meta: {title: "概览", requireAuth: true},
                 //真正的页面内容，会显示在布局的main部分
                 component: () => import('@/views/home/Home.vue'),
@@ -42,7 +42,7 @@ const routes = [
         path: "/cluster",
         name: "集群",
         component: Layout,
-        icon: "cloud-server-outlined",
+        icon: "cloud-twoTone",
         children: [
             {
                 path: "/cluster/node",
@@ -68,7 +68,7 @@ const routes = [
         path: "/workload",
         name: "工作负载",
         component: Layout,
-        icon: "block-outlined",
+        icon: "switcher-twoTone",
         children: [
             {
                 path: "/workload/pod",
@@ -98,19 +98,20 @@ const routes = [
     },
     {
         path: '/workload/pod/terminal',  //url路径
+        //不是使用layout
         component: () => import('@/views/workload/PodTerminal.vue'),  //视图组件
-        meta: {title: "终端", requireAuth: false},  //meta元信息
+        meta: {title: "Pod终端", requireAuth: false},  //meta元信息
     },
     {
         path: '/workload/pod/log',  //url路径
         component: () => import('@/views/workload/PodLog.vue'),  //视图组件
-        meta: {title: "日志", requireAuth: false},  //meta元信息
+        meta: {title: "容器日志", requireAuth: false},  //meta元信息
     },
     {
         path: "/loadbalance",
-        name: "负载均衡",
+        name: "服务",
         component: Layout,
-        icon: "partition-outlined",
+        icon: "control-twoTone",
         children: [
             {
                 path: "/loadbalance/ingress",
@@ -128,9 +129,9 @@ const routes = [
     },
     {
         path: "/storage",
-        name: "存储配置",
+        name: "配置和存储",
         component: Layout,
-        icon: "book-outlined",
+        icon: "database-twoTone",
         children: [
             {
                 path: "/storage/configmap",
@@ -154,9 +155,9 @@ const routes = [
     },
     {
         path: '/helmstore',
-        name: "Helm应用",
+        name: "应用商店",
         component: Layout,
-        icon: "appstore-outlined",
+        icon: "shop-twoTone",
         children: [
             {
                 path: "/helmstore/release",
@@ -181,6 +182,7 @@ const router = createRouter({
      * history模式：createWebHistory
      */
     history: createWebHistory(),
+    //传递路由对象routes
     routes
 })
 
@@ -200,7 +202,7 @@ NProgress.configure({ easing: 'ease', speed: 600, showSpinner: false })
 //页面打开之前
 //to去那个页面 from从那个页面来
 //router.beforeEach（）一般用来做一些进入页面的限制。比如没有登录，就不能进入某些
-//页面，只有登录了之后才有权限查看某些页面。。。说白了就是路由拦截。
+//页面，只有登录了之后才有权限查看某些页面 路由拦截。
 //to 要去到某个页面的属性
 //from 从哪个页面来的属性
 //next 处理路由跳转及放行
@@ -212,16 +214,18 @@ router.beforeEach((to, from, next) => {
     if (to.meta.title) {
         document.title = to.meta.title
     } else {
-        document.title = "kubeA"
+        document.title = "aBais"
     }
     //放行
     next()
 })
 
 //使用钩子函数对路由进行权限跳转
+//路由 页面加载前
 router.beforeEach((to, from, next) => {
     //验证jwt token是否合法
-    jwt.verify(localStorage.getItem('token'), 'adoodevops', function (err) {
+    jwt.verify(localStorage.getItem('token'), 'abais', function (err) {
+        //有错误就去登录页面,实际的token验证逻辑后端进行
         if (to.path === '/login') {
             next()
         } else if (err) {
