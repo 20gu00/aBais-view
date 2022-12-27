@@ -112,26 +112,36 @@
         </a-modal>
     </div>
 </template>
-
+<!--标准的 JavaScript 模块。它应该导出一个 Vue 组件定义作为其默认导出。-->
 <script>
+//vue方法
 import { createVNode, reactive, ref } from 'vue';
+//使用vue0router官方的路由管理器,useRouter方便获取路由信息
 import { useRouter } from 'vue-router'
+//src 子组件
 import MainHead from '@/components/MainHead';
 import httpClient from '@/request';
 import common from "@/config";
 import { message } from 'ant-design-vue';
 import yaml2obj from 'js-yaml';
 import json2yaml from 'json2yaml';
+//感叹号圆圈轮廓
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
+//对话框
 import { Modal } from 'ant-design-vue';
+//对外暴露,供使用
 export default({
+    //组件
     components: {
         MainHead,
     },
+    //setup函数
     setup() {
+        //定column
         const columns = ref([
             {
                 title: 'Pod名',
+                //索引
                 dataIndex: 'name'
             },
             {
@@ -158,14 +168,26 @@ export default({
             {
                 title: '操作',
                 key: 'action',
+                //靠右满 宽度
                 fixed: 'right',
                 width: 200
             }
         ])
         //常用项
+        //加载中
         const appLoading = ref(false)
+        //关键字查询
         const searchValue = ref('')
+        //指定的namespace
         const namespaceValue = ref('')
+        //ref的参数一般是基本数据类型，也可以是对象类型
+        //如果参数是对象类型，其实底层的本质还是reactive，系统会自动将ref转换为reactive，例如
+        //ref(1) ===> reactive({value:1})
+        //在模板中访问ref中的数据，系统会自动帮我们添加.value,在JS中访问ref中的数据，需要手动添加.value
+        //ref的底层原理同reactive一样，都是Proxy
+        //reactive的参数一般是对象或者数组,他能够将复杂数据类型变为响应式数据。
+        //reactive的响应式是深层次的，底层本质是将传入的数据转换为Proxy对象
+
         //分页
         const pagination = reactive({
             showSizeChanger: true,
@@ -178,10 +200,12 @@ export default({
 
         })
         //列表
+        //数组
         const podList = ref([])
         const podListData = reactive({
             url : common.k8sPodList,
             params: {
+                //过滤 关键字
                 filter_name: '',
                 namespace: '',
                 cluster: '',
@@ -189,13 +213,18 @@ export default({
                 limit: 10
             }
         })
+
         //详情
+        //yaml
         const contentYaml = ref('')
+        //对话框
         const yamlModal = ref(false)
         const cmOptions = common.cmOptions
+        //pod metadata
         const podDetail =  reactive({
             metadata: {}
         })
+        //pod 详情
         const podDetailData =  reactive({
             url: common.k8sPodDetail,
             params: {
@@ -204,7 +233,7 @@ export default({
                 cluster: ''
             }
         })
-        //yaml更新
+        //yaml更新(类似默认值,详细的看用户填写的)
         const updatePodData = reactive({
             url: common.k8sPodUpdate,
             params: {
@@ -236,15 +265,21 @@ export default({
         function transObj(content) {
             return yaml2obj.load(content)
         }
+        //时间卓转成相应格式的时间
         function timeTrans(timestamp) {
             let date = new Date(new Date(timestamp).getTime() + 8 * 3600 * 1000)
             date = date.toJSON();
+            //2022-12-02 09:09:09 19
             date = date.substring(0, 19).replace('T', ' ')
             return date 
         }
+        //文本省略
+        //处理标签
         function ellipsis(val, len) {
+            //substring() 方法用于提取字符串中介于两个指定下标之间的字符。
             return val.length > len ? val.substring(0,len) + '...' : val
         }
+        //pod重启的总次数
         function restartTotal(e) {
             let index, sum = 0
             let containerStatuses = e.status.containerStatuses
@@ -253,37 +288,46 @@ export default({
             }
             return sum
         }
+        //页面改变 当前页码和也大小->获取pod列表
         function handleTableChange(val) {
             pagination.currentPage = val.current
             pagination.pagesize = val.pageSize
             getPodList()
         }
+        //获取查询的值
         function getSearchValue(val) {
             searchValue.value = val
         }
+        //获取namespace
         function getNamespaceValue(val) {
             namespaceValue.value = val
         }
         //列表
         function getPodList() {
+            //已经加载完成
             appLoading.value = true
             if (searchValue.value) {
                 pagination.currentPage = 1
+                //可以改一下的podListData.params.limit
             }
+            //常规的全部列出
             podListData.params.filter_name = searchValue.value
             podListData.params.namespace = namespaceValue.value
             podListData.params.cluster = localStorage.getItem('k8s_cluster')
             podListData.params.page = pagination.currentPage
             podListData.params.limit = pagination.pagesize
             httpClient.get(podListData.url, {params: podListData.params})
+            //接口成功返回的数据,包含请求头,请求体,等信息
             .then(res => {
                 //响应成功，获取pod列表和total
                 podList.value = res.data.items
                 pagination.total = res.data.total
             })
+            //防止因为错误而造成系统崩溃 捕获错误
             .catch(res => {
                 message.error(res.msg)
             })
+            //最大程度避免影响主数据呈现问题
             .finally(() => {
                 appLoading.value = false
             })
@@ -291,12 +335,15 @@ export default({
         //详情
         function getPodDetail(e) {
             appLoading.value = true
+            //name namespace cluster
             podDetailData.params.pod_name = e.metadata.name
             podDetailData.params.namespace = namespaceValue.value
             podDetailData.params.cluster = localStorage.getItem('k8s_cluster')
             httpClient.get(podDetailData.url, {params: podDetailData.params})
             .then(res => {
+                //json转成yaml contentyaml
                 contentYaml.value = transYaml(res.data)
+                //yaml的modal对话框
                 yamlModal.value = true
             })
             .catch(res => {
@@ -310,14 +357,17 @@ export default({
         function onChange(val) {
             contentYaml.value = val
         }
+
         //更新
         function updatePod() {
             appLoading.value = true
-            //将yaml格式的pod对象转为json
+            //将yaml格式的pod对象转为json web(http) restful 底层http 接送编码居多
+            //JSON.stringify序列化 json编码 transObj:yaml转成obj
             let content = JSON.stringify(transObj(contentYaml.value))
             updatePodData.params.namespace = namespaceValue.value
             updatePodData.params.content = content
             updatePodData.params.cluster = localStorage.getItem('k8s_cluster')
+            //httpclient 发起请求 修改put (restful patch部分更新 update全量更新)
             httpClient.put(updatePodData.url, updatePodData.params)
             .then(res => {
                 message.success(res.msg)
@@ -351,12 +401,14 @@ export default({
         function gotoTerminal(record) {
             let routeUrl = router.resolve({
                 path: "/workload/pod/terminal",
+                //需要的参数
                 query: {
                     pod_name: record.metadata.name,
                     namespace: record.metadata.namespace,
                     cluster: localStorage.getItem('k8s_cluster')
                 }
             })
+            //跳转页面 url _blank标准浏览器
             window.open(routeUrl.href, '_blank')
         }
         //跳转日志页
@@ -373,14 +425,17 @@ export default({
         }
         //确认框
         function showConfirm(action, res, fn) {
+            //对话框的确认
             Modal.confirm({
                 title: '是否继续' + action + "操作? 操作对象：",
+                //"#createVNode用于创建虚拟节点，里面可以定义图标或者html
                 icon: createVNode(ExclamationCircleOutlined),
                 content: createVNode('div', {
                     //style: 'color:red;',
                 }, res),
                 cancelText: '取消',
                 okText: '确认',
+                //点击ok时
                 onOk() {
                     fn(res)
                 },
@@ -389,6 +444,7 @@ export default({
                 // }
             })
         }
+        //return出去才能使用
         return {
             appLoading,
             pagination,
@@ -417,6 +473,13 @@ export default({
 })
 </script>
 
+<!--
+    定义了与此组件关联的 CSS   .当前的
+    margin-right:auto 靠右 内边距
+    display 为元素生成的一个或多个框的类型 inline-block内联块
+    border-radius 边界半径
+    border 边界 solid固体
+-->
 <style scoped>
     .pod-button {
         margin-right: 5px;
