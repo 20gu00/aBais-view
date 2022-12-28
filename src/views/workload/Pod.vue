@@ -8,7 +8,7 @@
             @namespaceChange="getNamespaceValue"
             @dataList="getPodList"/>
         <!--card 通用卡片容器，可承载文字、列表、图片、段落-->
-        <!--bodyStyle 内容区域自定义样式 css-->
+        <!--bodyStyle 内容区域自定义样式 css padding上下左右内边距-->
         <a-card :bodyStyle="{padding: '10px'}">
              <!--表格 用于展示多条结构类似的数据，可对数据进行排序、筛选、对比或 其他自定义操作-->
             <!--bodyCell 个性化单元格 bordered 是否展示外边框和列边框 loading 页面是否加载中 columns 表格列的配置描述 dataSource 数据数组 pagination 分页器 size 表格大小 change事件 分页、排序、筛选变化时
