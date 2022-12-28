@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import kubeLogo from '@/assets/k8s-metrics.png';
+import kubeLogo from '@/assets/k8s.png';
 import { reactive, ref } from 'vue';
 import { message } from 'ant-design-vue';
 import { useRouter } from 'vue-router'
