@@ -84,6 +84,7 @@ export default({
                 dataIndex: 'standard'
             },
             {
+                //pod的网段 一般有service pod cluster
                 title: 'POD-CIDR',
                 dataIndex: 'podCidr',
             },
