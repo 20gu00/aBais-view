@@ -88,7 +88,7 @@
             v-model:visible 控制隐藏与展示
             事件:
             ok 点击确定回调
-            cancel 点击遮罩层或右上角叉或取消按钮的回调(如果只是关闭那么v-model:visible就可以了)
+            cancel 点击遮罩层或右上角叉或取消按钮的回调(如果只是关闭那么v-model:visible就也可以实现了)
         -->
         <a-modal
             v-model:visible="yamlModal"
