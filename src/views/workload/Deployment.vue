@@ -1,7 +1,8 @@
 <template>
     <div>
+        <!--添加 新建-->
         <MainHead
-            searchDescribe="请输入"
+            searchDescribe="关键词"
             @searchChange="getSearchValue"
             namespace
             @namespaceChange="getNamespaceValue"
@@ -32,6 +33,7 @@
                         </div>
                     </template>
                     <template v-if="column.dataIndex === 'containers'">
+                        <!--pod副本副本数目,运行正常的pod 预计的pod数目-->
                         <span style="font-weight:bold;">{{ record.status.availableReplicas > 0 ? record.status.availableReplicas: 0 }} / {{ record.spec.replicas > 0 ? record.spec.replicas: 0 }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'image'">
@@ -48,9 +50,9 @@
                         <a-tag color="gray">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button class="deployment-button" type="primary" icon="form-outlined" @click="getDeploymentDetail(record)">YML</c-button>
+                        <c-button class="deployment-button" type="primary" icon="form-outlined" @click="getDeploymentDetail(record)">YAML</c-button>
                         <c-button style="margin-bottom:5px;" class="deployment-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delDeployment)">删除</c-button>
-                        <c-button class="deployment-button" type="warning" icon="block-outlined" @click="handleScale(record)">扩容</c-button>
+                        <c-button class="deployment-button" type="warning" icon="block-outlined" @click="handleScale(record)">扩缩容</c-button>
                         <c-button class="deployment-button" type="warning" icon="retweet-outlined" @click="showConfirm('重启', record.metadata.name, restartDeployment)">重启</c-button>
                     </template>
                 </template>
@@ -96,25 +98,62 @@
                 </a-popover>
             </div>
         </a-modal>
-        <!-- 创建deployment的抽屉弹框 -->
+        <!--
+             创建deployment的抽屉弹框
+             抽屉从窗口边缘滑入，用户可在抽屉中完成相应操作后，回到原窗口，常用于数据展示、表单添加等
+             title 抽屉的标题
+             footerStyle 抽屉页脚部件的样式 align排列
+             placement 抽屉的方向 'top' | 'right' | 'bottom' |'left' 
+             bodyStyle 可用于设置 Drawer 内容部分的样式
+            v-model:visible Drawer 是否可见
+            width 宽度
+            <br>空行
+            -->
         <a-drawer
             v-model:visible="createDrawer"
             title="创建Deployment"
             :footer-style="{ textAlign: 'right' }"
             @close="onClose">
             <br>
+        <!--
+            a-form表单
+            表单包含输入框，单选框，下拉选择，多选框等用户输 入的组件。使用表单，可以收集、验证和提交数据。
+            表单内常用组件：
+            a-input：输入框
+            a-select：下拉选择框
+            a-checkbox-group：多选框
+            a-radio-group ：单选框
+            a-switch：开关
+
+            <a-form></a-form>:
+            model 表单数据对象
+            labelCol label 标签布局，同 <Col> 组件，设置 span offset 值，如 {span: 3, offset: 12} 或 sm: {span:3, offset: 12}
+            rules 表单验证规则
+            layout 表单布局
+            labelAlign label 标签的文本对齐方式
+            ref 用来获取dom元素或者组件
+        -->
             <a-form ref="formRef" :model="createDeployment" :labelCol="{style: {width: '30%'}}">
+                <!--
+                    label label 标签的文本
+                    name 表单域 model 字段，在使用 validate、resetFields 方法的情况下， 该属性是必填的
+                    rules 表单验证规则
+                -->
+                <!--每个表单项目-->
                 <a-form-item
                     label="名称"
                     name="createName"
                     :rules="[{ required: true, message: '请输入Deployment名称' }]">
+                    <!--输入框 v-model本质v-bind v-on 双向绑定-->
                     <a-input v-model:value="createName" />
                 </a-form-item>
                 <a-form-item
                     label="命名空间"
                     name="createNamespace"
                     :rules="[{ required: true, message: '请选择命名空间' }]">
+                    <!--下拉选择框 placeholder占位符-->
                     <a-select show-search style="width:140px;" v-model:value="createNamespace" placeholder="请选择">
+                        <!--可选项 遍历-->
                         <a-select-option
                             v-for="(item, index) in namespaceList"
                             :key="index"
@@ -126,11 +165,14 @@
                 <a-form-item
                     label="副本数"
                     name="createReplicas">
+                    <!--数字输入 最大最小的限制-->
                     <a-input-number v-model:value="createReplicas" :min="1" :max="30"></a-input-number>
+                    <!--提示-->
                     <a-popover>
                         <template #content>
                             <span>Deployment副本数最小1，最大30</span>
                         </template>
+                        <!--信息圈概述  提示-->
                         <info-circle-outlined style="margin-left:10px;color:rgb(84, 138, 238);" />
                     </a-popover>
                 </a-form-item>
@@ -144,6 +186,7 @@
                     label="标签"
                     name="createLabelStr"
                     :rules="[{ required: true, message: '请输入标签' }]">
+                    <!--占位符 案例-->
                     <a-input v-model:value="createLabelStr" placeholder="project=ms,app=gateway" />
                 </a-form-item>
                 <a-form-item
@@ -169,6 +212,7 @@
                     name="createHealthCheck">
                     <a-switch v-model:checked="createHealthCheck" />
                 </a-form-item>
+                <!--默认简单的路径 ping检测-->
                 <a-form-item
                     v-if="createHealthCheck"
                     label="检测路径"
@@ -177,6 +221,7 @@
                     <a-input v-model:value="createHealthPath" />
                 </a-form-item>
             </a-form>
+            <!--抽屉底部-->
             <template #footer>
                 <a-button style="margin-right: 8px" @click="onClose()">取消</a-button>
                 <a-button type="primary" @click="formSubmit()">创建</a-button>
@@ -319,7 +364,7 @@ export default({
             createReplicas: 1,
             createImage: '',
             createResource: '',
-            createHealthCheck: false,
+            createHealthCheck: false,  //默认关闭探针
             createHealthPath: '',
             createLabelStr: '',
             createContainerPort: ''
@@ -597,7 +642,7 @@ export default({
                 okText: '确认',
                 onOk() {
                     createDrawer.value = false
-                    resetForm()
+                    resetForm()  //重置表单
                 },
                 onCancel() {
                     createDrawer.value = true
@@ -644,6 +689,7 @@ export default({
 })
 </script>
 
+<!--一般是在template的class 或者scripts的setup-->
 <style scoped>
     .deployment-button {
         margin-right: 5px;

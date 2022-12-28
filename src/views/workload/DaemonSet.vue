@@ -30,7 +30,7 @@
                         </div>
                     </template>
                     <template v-if="column.dataIndex === 'containers'">
-                        <!--应该调度的有也就是应该有多少个容器 可用的有 如果小于等于0那就是0-->
+                        <!--应该调度的有也就是应该有多少个容器 可用的有 左边true那么就是?右边不然就是:右边的0 如果小于等于0那就是0-->
                         <span>{{ record.status.numberAvailable>0?record.status.numberAvailable:0  }} / {{ record.status.desiredNumberScheduled>0?record.status.desiredNumberScheduled:0 }} </span>
                     </template>
                     <template v-if="column.dataIndex === 'image'">
