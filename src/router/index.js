@@ -25,9 +25,9 @@ const routes = [
         children: [
             {
                 path: "/home",
-                name: "概览",
-                icon: "fund-outlined",
-                meta: {title: "概览", requireAuth: true},
+                name: "大盘",
+                icon: "dashboard-twoTone",
+                meta: {title: "大盘", requireAuth: true},
                 component: () => import('@/views/home/Home.vue'),
             }
         ]
@@ -36,7 +36,7 @@ const routes = [
         path: "/cluster",
         name: "集群",
         component: Layout,
-        icon: "cloud-server-outlined",
+        icon: "cloud-twoTone",
         children: [
             {
                 path: "/cluster/node",
@@ -60,9 +60,9 @@ const routes = [
     },
     {
         path: "/workload",
-        name: "工作负载",
+        name: "负载",
         component: Layout,
-        icon: "block-outlined",
+        icon: "switcher-twoTone",
         children: [
             {
                 path: "/workload/pod",
@@ -102,9 +102,9 @@ const routes = [
     },
     {
         path: "/loadbalance",
-        name: "负载均衡",
+        name: "服务",
         component: Layout,
-        icon: "partition-outlined",
+        icon: "control-twoTone",
         children: [
             {
                 path: "/loadbalance/ingress",
@@ -122,9 +122,9 @@ const routes = [
     },
     {
         path: "/storage",
-        name: "存储配置",
+        name: "存储与配置",
         component: Layout,
-        icon: "book-outlined",
+        icon: "database-twoTone",
         children: [
             {
                 path: "/storage/configmap",
@@ -148,9 +148,9 @@ const routes = [
     },
     {
         path: '/helmstore',
-        name: "Helm应用",
+        name: "应用商店",
         component: Layout,
-        icon: "appstore-outlined",
+        icon: "shop-twoTone",
         children: [
             {
                 path: "/helmstore/release",
@@ -160,8 +160,8 @@ const routes = [
             },
             {
                 path: "/helmstore/chartrepo",
-                name: "Chart仓库",
-                meta: {title: "Chart仓库", requireAuth: true},
+                name: "Chart Repo",
+                meta: {title: "Chart Repo", requireAuth: true},
                 component: () => import('@/views/helmstore/ChartRepo.vue'),
             }
         ]

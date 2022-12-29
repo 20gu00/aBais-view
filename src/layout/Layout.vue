@@ -6,7 +6,7 @@
                 <!-- 平台名 -->
                 <div style="float:left;">
                     <img style="height:40px;margin-bottom:10px;" :src="kubeLogo" />
-                    <span style="padding:0 50px 0 20px;font-size:25px;font-weight:bold;color:aqua">aBais</span>
+                    <span style="padding:0 50px 0 15px;font-size:35px;font-weight:bold;color:aqua">aBais</span>
                 </div>
                 <!-- 集群 -->
                 <a-menu
@@ -19,9 +19,9 @@
                 </a-menu>
                 <!-- 用户信息 -->
                 <div style="float:right;">
-                    <img style="height:40px;border-radius:50%;margin-right:10px;" :src="avator"/>
+                    <img style="height:40px;border-radius:50%;margin-right:5px;" :src="avator"/>
                     <a-dropdown style="margin-top: 10px;" :overlayStyle="{paddingTop: '20px'}">
-                        <a class="ant-dropdown-link" @click.prevent>
+                        <a class="ant-dropdown-link" style="color:bisque" @click.prevent>
                             Admin
                             <down-outlined />
                         </a>
@@ -41,8 +41,8 @@
         </a-affix>
         <a-layout style="height:calc(100vh - 68px);">
             <!-- 侧边栏，核心 -->
-            <!-- collapsed处理展开和收缩  -->
-            <a-layout-sider width="240" style="background: #fff" v-model:collapsed="collapsed" collapsible>
+            <!-- collapsed处理展开和收缩 -->
+            <a-layout-sider width="200" style="background:cornflowerblue" v-model:collapsed="collapsed" collapsible>
                 <!-- selectedKeys表示点击选中的栏目,用于a-menu-item -->
                 <!-- openKeys表示展开的栏目，用于a-sub-menu -->
                 <!-- openChange事件监听 SubMenu 展开/关闭的回调 -->
@@ -64,7 +64,7 @@
                             <template #icon>
                                 <component :is="menu.children[0].icon" />
                             </template>
-                            <span>{{ menu.children[0].name }}</span>
+                            <span style="font-size:large">{{ menu.children[0].name }}</span>
                         </a-menu-item>
                         <!-- 处理有子路由的情况，也就是父栏目 -->
                         <a-sub-menu
@@ -76,7 +76,7 @@
                             </template>
                             <template #title>
                                 <span>
-                                    <span :class="[collapsed ? 'is-collapse' : '']">{{ menu.name }}</span>
+                                    <span :class="[collapsed ? 'is-collapse' : '']" style="font-size:large">{{ menu.name }}</span>
                                 </span>
                             </template>
                             <!-- 子栏目（子路由）的处理 -->
@@ -85,7 +85,7 @@
                             :key="child.path" 
                             :index="child.path"
                             @click="routeChange('sub', child.path)">
-                                <span>{{ child.name }}</span>
+                                <span style="font-size:medium">{{ child.name }}</span>
                             </a-menu-item>
                         </a-sub-menu>
                     </template>
@@ -93,11 +93,11 @@
             </a-layout-sider>
             <a-layout style="padding: 0 24px">
                 <!-- 面包屑 -->
-                <a-breadcrumb style="margin: 16px 0">
+                <a-breadcrumb style="margin: 5px 0;color:deepskyblue">
                     <a-breadcrumb-item>console</a-breadcrumb-item>
                     <!-- router.currentRoute.value.matched表示路由的match信息，能拿到父路由和子路由的信息 -->
                     <template v-for="(matched,index) in router.currentRoute.value.matched" :key="index">
-                        <a-breadcrumb-item v-if="matched.name">
+                        <a-breadcrumb-item v-if="matched.name" style="color:deepskyblue">
                             {{ matched.name }}
                         </a-breadcrumb-item>
                     </template>
@@ -105,8 +105,8 @@
                 <!-- main的部分 -->
                 <a-layout-content
                 :style="{
-                    background: 'rgb(31, 30, 30)',
-                    padding: '24px', 
+                    background: 'rgb(50, 50, 50)',
+                    padding: '15px', 
                     margin: 0, 
                     minHeight: '280px', 
                     overflowY: 'auto'}">
@@ -114,7 +114,7 @@
                     <router-view></router-view>
                 </a-layout-content>
                 <!-- footer部分 -->
-                <a-layout-footer style="text-align: center;color:lightgreen">
+                <a-layout-footer style="text-align: center;color:mediumspringgreen">
                     ©2022 Created by 20gu00(github同名)
                 </a-layout-footer>
             </a-layout>
