@@ -3,7 +3,7 @@ export default {
     //登录
     //所有资源数据
     k8sAllRes: baseHost + '/api/v1/k8s/allresource',
-    loginAuth: baseHost + '/api/v1/admin',
+    loginAuth: baseHost + '/api/v1/login',
     //cluster
     k8sClusterList: baseHost + '/api/v1/k8s/clusters',
     //event
