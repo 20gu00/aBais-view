@@ -14,7 +14,7 @@
             <!--bodyCell 个性化单元格 bordered 是否展示外边框和列边框 loading 页面是否加载中 columns 表格列的配置描述 dataSource 数据数组 pagination 分页器 size 表格大小 change事件 分页、排序、筛选变化时
 触发-->
              <a-table
-                style="font-size:12px;" 
+                style="font-size:15px" 
                 :loading="appLoading" 
                 :columns="columns" 
                 :dataSource="podList"
@@ -25,10 +25,10 @@
                     <!--自定义每一列的数据-->
                     <template v-if="column.dataIndex === 'name'">
                         <!--行内标签 字体 color-->
-                        <span style="font-weight: bold;">{{ record.metadata.name }}</span>
+                        <span style="font-weight: bold;color:coral;font-size:medium">{{ record.metadata.name }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'node'">
-                        <span style="color: rgb(84, 138, 238);">{{ record.spec.nodeName }}</span>
+                        <span style="color:dodgerblue;font-size:medium">{{ record.spec.nodeName }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'state'">
                         <!--块 进行排版 align left 居左，默认 right 居右 center 居中 justify-->
@@ -37,7 +37,7 @@
                         <span :class="{'succ-state':record.status.phase == 'Running', 'warn-state':record.status.phase == 'Pending', 'err-status':record.status.phase != 'Running' && record.status.phase != 'Pending'}">{{ record.status.phase }} </span>
                     </template>
                     <template v-if="column.dataIndex === 'restarts'">
-                         <span>{{ restartTotal(record) }} </span>
+                         <span style="color:cadetblue;font-size:medium">{{ restartTotal(record) }} </span>
                     </template>
                     <!--vue的组件的模板-->
                     <template v-if="column.dataIndex === 'labels'">
@@ -50,7 +50,7 @@
                                     <span>{{ key + ":" +val }}</span>
                                 </template>
                                 <!--标签 margin-bottom元素的下边距  cursor:pointer|hand 炫富光标变成手形 color整体颜色 ellipsis自动处理文本的省略-->
-                                <a-tag style="margin-bottom:5px;cursor:pointer;" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
+                                <a-tag style="margin-bottom:5px;cursor:pointer;font-size:medium" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
                             </a-popover>
                         </div>
                     </template>
@@ -60,20 +60,20 @@
                                 <template #content>
                                     <span>{{ val.image }}</span>
                                 </template>
-                                <a-tag style="margin-bottom:5px;cursor:pointer;" color="geekblue">{{ ellipsis(val.image.split('/').pop() ? val.image.split('/').pop() : val.image, 15 ) }}</a-tag>
+                                <a-tag style="margin-bottom:10px;cursor:pointer;font-size:medium;color:gold" color="geekblue">{{ ellipsis(val.image.split('/').pop() ? val.image.split('/').pop() : val.image, 15 ) }}</a-tag>
                             </a-popover>
                         </div>
                     </template>
                     <template v-if="column.dataIndex === 'creationTimestamp'">
                         <!--2022-12-20 09:09:09-->
-                        <a-tag color="chartreuse">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
+                        <a-tag style="color:linen;font-size:medium">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
                         <!--按钮-->
-                        <c-button class="pod-button" type="primary" icon="form-outlined" @click="getPodDetail(record)">yaml</c-button>
+                        <c-button class="pod-button" type="primary" icon="form-outlined" @click="getPodDetail(record)">YML</c-button>
                         <c-button style="margin-bottom:5px;" class="pod-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delPod)">删除</c-button>
-                        <c-button class="pod-button" type="warning" icon="file-search-outlined" @click="gotoLog(record)">log</c-button>
-                        <c-button class="pod-button" type="warning" icon="code-outlined" @click="gotoTerminal(record)">TTY</c-button>
+                        <c-button class="pod-button" type="warning" icon="file-search-outlined" @click="gotoLog(record)">日志</c-button>
+                        <c-button class="pod-button" type="warning" icon="code-outlined" @click="gotoTerminal(record)">终端</c-button>
                     </template>
                 </template>
             </a-table>
@@ -140,25 +140,25 @@ export default({
         //定column
         const columns = ref([
             {
-                title: 'Pod名',
+                title: 'pod名称',
                 //索引
                 dataIndex: 'name'
             },
             {
-                title: '节点',
+                title: 'node',
                 dataIndex: 'node'
             },
             {
-                title: '状态',
+                title: 'status',
                 dataIndex: 'state',
                 width: 120
             },
             {
-                title: '重启数',
+                title: '重启次数',
                 dataIndex: 'restarts'
             },
             {
-                title: '镜像',
+                title: 'image',
                 dataIndex: 'image'
             },
             {
@@ -166,7 +166,7 @@ export default({
                 dataIndex: 'creationTimestamp'
             },
             {
-                title: '操作',
+                title: 'action',
                 key: 'action',
                 //靠右满 宽度
                 fixed: 'right',
