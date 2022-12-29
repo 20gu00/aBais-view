@@ -6,7 +6,7 @@
                 <!-- 平台名 -->
                 <div style="float:left;">
                     <img style="height:40px;margin-bottom:10px;" :src="kubeLogo" />
-                    <span style="padding:0 50px 0 20px;font-size:25px;font-weight:bold;color:#fff">KubeA</span>
+                    <span style="padding:0 50px 0 20px;font-size:25px;font-weight:bold;color:aqua">aBais</span>
                 </div>
                 <!-- 集群 -->
                 <a-menu
@@ -94,7 +94,7 @@
             <a-layout style="padding: 0 24px">
                 <!-- 面包屑 -->
                 <a-breadcrumb style="margin: 16px 0">
-                    <a-breadcrumb-item>工作台</a-breadcrumb-item>
+                    <a-breadcrumb-item>console</a-breadcrumb-item>
                     <!-- router.currentRoute.value.matched表示路由的match信息，能拿到父路由和子路由的信息 -->
                     <template v-for="(matched,index) in router.currentRoute.value.matched" :key="index">
                         <a-breadcrumb-item v-if="matched.name">
@@ -114,8 +114,8 @@
                     <router-view></router-view>
                 </a-layout-content>
                 <!-- footer部分 -->
-                <a-layout-footer style="text-align: center">
-                    ©2022 Created by adoo Devops
+                <a-layout-footer style="text-align: center;color:lightgreen">
+                    ©2022 Created by 20gu00(github同名)
                 </a-layout-footer>
             </a-layout>
         </a-layout>
@@ -239,16 +239,17 @@ export default ({
 </script>
 <style scoped>
     .ant-layout-header {
+        background-color:rgb(50, 50, 50);
         padding: 0 30px !important;
     }
     .ant-layout-content::-webkit-scrollbar {
         width:6px;
     }
     .ant-layout-content::-webkit-scrollbar-track {
-        background-color:rgb(164, 162, 162);
+        background-color:rgb(176, 173, 173);
     }
     .ant-layout-content::-webkit-scrollbar-thumb {
-        background-color:#666;
+        background-color:rgb(60, 59, 59);
     }
     .ant-layout-footer {
         padding: 5px 50px !important;
