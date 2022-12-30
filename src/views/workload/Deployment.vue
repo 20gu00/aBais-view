@@ -12,7 +12,7 @@
             @addFunc="handleAdd"/>
        <a-card :bodyStyle="{padding: '10px'}">
             <a-table
-                style="font-size:12px;" 
+                style="font-size:15px;" 
                 :loading="appLoading" 
                 :columns="columns" 
                 :dataSource="deploymentList"
@@ -20,7 +20,7 @@
                 @change="handleTableChange">
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.dataIndex === 'name'">
-                        <span style="font-weight: bold;">{{ record.metadata.name }}</span>
+                        <span style="font-weight: bold;color:coral;font-size:medium">{{ record.metadata.name }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'labels'">
                         <div v-for="(val, key) in record.metadata.labels" :key="key">
@@ -28,13 +28,13 @@
                                 <template #content>
                                     <span>{{ key + ":" +val }}</span>
                                 </template>
-                                <a-tag style="margin-bottom:5px;cursor:pointer;" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
+                                <a-tag style="color:greenyellow;font-size:medium;margin-bottom:5px;cursor:pointer;" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
                             </a-popover>
                         </div>
                     </template>
                     <template v-if="column.dataIndex === 'containers'">
                         <!--pod副本副本数目,运行正常的pod 预计的pod数目-->
-                        <span style="font-weight:bold;">{{ record.status.availableReplicas > 0 ? record.status.availableReplicas: 0 }} / {{ record.spec.replicas > 0 ? record.spec.replicas: 0 }}</span>
+                        <span style="font-weight:bold;font-size:medium;color:cadetblue">{{ record.status.availableReplicas > 0 ? record.status.availableReplicas: 0 }} / {{ record.spec.replicas > 0 ? record.spec.replicas: 0 }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'image'">
                         <div v-for="(val, key) in record.spec.template.spec.containers" :key="key">
@@ -42,18 +42,18 @@
                                 <template #content>
                                     <span>{{ val.image }}</span>
                                 </template>
-                                <a-tag style="margin-bottom:5px;cursor:pointer;" color="geekblue">{{ ellipsis(val.image.split('/').pop() ? val.image.split('/').pop() : val.image, 15 ) }}</a-tag>
+                                <a-tag style="font-size:medium;color:gold;margin-bottom:5px;cursor:pointer;" color="geekblue">{{ ellipsis(val.image.split('/').pop() ? val.image.split('/').pop() : val.image, 15 ) }}</a-tag>
                             </a-popover>
                         </div>
                     </template>
                     <template v-if="column.dataIndex === 'creationTimestamp'">
-                        <a-tag color="gray">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
+                        <a-tag style="color:linen;font-size:medium">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button class="deployment-button" type="primary" icon="form-outlined" @click="getDeploymentDetail(record)">YAML</c-button>
-                        <c-button style="margin-bottom:5px;" class="deployment-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delDeployment)">删除</c-button>
-                        <c-button class="deployment-button" type="warning" icon="block-outlined" @click="handleScale(record)">扩缩容</c-button>
-                        <c-button class="deployment-button" type="warning" icon="retweet-outlined" @click="showConfirm('重启', record.metadata.name, restartDeployment)">重启</c-button>
+                        <c-button class="deployment-button" style="color:aqua" type="primary" icon="form-outlined" @click="getDeploymentDetail(record)">YAML</c-button>
+                        <c-button style="margin-bottom:5px;color:crimson" class="deployment-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delDeployment)">删除</c-button>
+                        <c-button class="deployment-button" style="color:chartreuse" type="warning" icon="block-outlined" @click="handleScale(record)">扩缩容</c-button>
+                        <c-button class="deployment-button" style="color:cyan" type="warning" icon="retweet-outlined" @click="showConfirm('重启', record.metadata.name, restartDeployment)">重启</c-button>
                     </template>
                 </template>
             </a-table>
@@ -248,19 +248,19 @@ export default({
         //表结构
         const columns = ref([
             {
-                title: 'Deployment名',
+                title: 'Deployment',
                 dataIndex: 'name'
             },
             {
-                title: '标签',
+                title: 'label',
                 dataIndex: 'labels'
             },
             {
-                title: '容器组',
+                title: 'pod组',
                 dataIndex: 'containers',
             },
             {
-                title: '镜像',
+                title: 'image',
                 dataIndex: 'image'
             },
             {
@@ -268,7 +268,7 @@ export default({
                 dataIndex: 'creationTimestamp'
             },
             {
-                title: '操作',
+                title: 'action',
                 key: 'action',
                 fixed: 'right',
                 width: 200
@@ -693,6 +693,7 @@ export default({
 <style scoped>
     .deployment-button {
         margin-right: 5px;
+        width:77px;
     }
     .ant-form-item {
         margin-bottom: 20px;

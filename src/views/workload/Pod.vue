@@ -70,10 +70,10 @@
                     </template>
                     <template v-if="column.key === 'action'">
                         <!--按钮-->
-                        <c-button class="pod-button" type="primary" icon="form-outlined" @click="getPodDetail(record)">YML</c-button>
-                        <c-button style="margin-bottom:5px;" class="pod-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delPod)">删除</c-button>
-                        <c-button class="pod-button" type="warning" icon="file-search-outlined" @click="gotoLog(record)">日志</c-button>
-                        <c-button class="pod-button" type="warning" icon="code-outlined" @click="gotoTerminal(record)">终端</c-button>
+                        <c-button class="pod-button" style="color:aqua" type="primary" icon="form-outlined" @click="getPodDetail(record)">YAML</c-button>
+                        <c-button style="margin-bottom:5px;color:crimson" class="pod-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delPod)">删除</c-button>
+                        <c-button class="pod-button" style="color:chartreuse" type="warning" icon="file-search-outlined" @click="gotoLog(record)">日志</c-button>
+                        <c-button class="pod-button" style="color:cyan" type="warning" icon="code-outlined" @click="gotoTerminal(record)">终端</c-button>
                     </template>
                 </template>
             </a-table>
@@ -483,6 +483,7 @@ export default({
 <style scoped>
     .pod-button {
         margin-right: 5px;
+        width:77px;
     }
     .succ-dot{
         display:inline-block;

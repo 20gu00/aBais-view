@@ -8,7 +8,7 @@
             @dataList="getDaemonSetList"/>
        <a-card :bodyStyle="{padding: '10px'}">
             <a-table
-                style="font-size:12px;" 
+                style="font-size:15px;" 
                 :loading="appLoading" 
                 :columns="columns" 
                 :dataSource="daemonSetList"
@@ -16,7 +16,7 @@
                 @change="handleTableChange">
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.dataIndex === 'name'">
-                        <span style="font-weight: bold;">{{ record.metadata.name }}</span>
+                        <span style="font-weight: bold;color:coral;font-size:medium">{{ record.metadata.name }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'labels'">
                         <div v-for="(val, key) in record.metadata.labels" :key="key">
@@ -25,7 +25,7 @@
                                 <template #content>
                                     <span>{{ key + ":" +val }}</span>
                                 </template>
-                                <a-tag style="margin-bottom:5px;cursor:pointer;" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
+                                <a-tag style="margin-bottom:5px;cursor:pointer;font-size:medium;color:greenyellow">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
                             </a-popover>
                         </div>
                     </template>
@@ -41,16 +41,16 @@
                                     <!--image-->
                                     <span>{{ val.image }}</span>
                                 </template>
-                                <a-tag style="margin-bottom:5px;cursor:pointer;" color="geekblue">{{ ellipsis(val.image.split('/').pop() ? val.image.split('/').pop() : val.image, 15 ) }}</a-tag>
+                                <a-tag style="font-size:medium;color:gold;margin-bottom:5px;cursor:pointer;" color="geekblue">{{ ellipsis(val.image.split('/').pop() ? val.image.split('/').pop() : val.image, 15 ) }}</a-tag>
                             </a-popover>
                         </div>
                     </template>
                     <template v-if="column.dataIndex === 'creationTimestamp'">
-                        <a-tag color="gray">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
+                        <a-tag style="color:linen;font-size:medium">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button style="margin-bottom:5px;" class="daemonSet-button" type="primary" icon="form-outlined" @click="getDaemonSetDetail(record)">YAML</c-button>
-                        <c-button class="daemonSet-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delDaemonSet)">删除</c-button>
+                        <c-button style="margin-bottom:5px;color:aqua" class="daemonSet-button" type="primary" icon="form-outlined" @click="getDaemonSetDetail(record)">YAML</c-button>
+                        <c-button style="color:crimson" class="daemonSet-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delDaemonSet)">删除</c-button>
                     </template>
                 </template>
             </a-table>
@@ -100,19 +100,19 @@ export default({
         //column
         const columns = ref([
             {
-                title: 'DeamonSet名',
+                title: 'DeamonSet',
                 dataIndex: 'name'
             },
             {
-                title: '标签',
+                title: 'label',
                 dataIndex: 'labels'
             },
             {
-                title: '容器组',
+                title: 'pod组',
                 dataIndex: 'containers',
             },
             {
-                title: '镜像',
+                title: 'image',
                 dataIndex: 'image'
             },
             {
@@ -120,7 +120,7 @@ export default({
                 dataIndex: 'creationTimestamp'
             },
             {
-                title: '操作',
+                title: 'action',
                 key: 'action',
                 fixed: 'right',
                 width: 200
@@ -346,6 +346,7 @@ export default({
 <style scoped>
     .daemonSet-button {
         margin-right: 5px;
+        width:77px;
     }
     .ant-form-item {
         margin-bottom: 20px;
