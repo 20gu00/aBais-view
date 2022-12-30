@@ -35,7 +35,7 @@
                                         />
                                     </div>
                                     <div style="text-align:center;">
-                                        <span style="font-size:20px;">{{ key }}</span>
+                                        <span style="font-size:20px;color:black">{{ key }}</span>
                                         <br/>
                                         <span style="font-size:30px;font-weight:bold;">{{ resourceList[key] }}</span>
                                     </div>

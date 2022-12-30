@@ -6,7 +6,7 @@
             @dataList="getPvList"/>
        <a-card :bodyStyle="{padding: '10px'}">
             <a-table
-                style="font-size:12px;" 
+                style="font-size:15px;" 
                 :loading="appLoading" 
                 :columns="columns" 
                 :dataSource="pvList"
@@ -14,7 +14,7 @@
                 @change="handleTableChange">
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.dataIndex === 'name'">
-                        <span style="font-weight: bold;">{{ record.metadata.name }}</span>
+                        <span style="font-weight: bold;color:coral;font-size:medium">{{ record.metadata.name }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'labels'">
                         <div v-for="(val, key) in record.metadata.labels" :key="key">
@@ -22,7 +22,7 @@
                                 <template #content>
                                     <span>{{ key + ":" +val }}</span>
                                 </template>
-                                <a-tag style="margin-bottom:5px;cursor:pointer;" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
+                                <a-tag style="margin-bottom:5px;cursor:pointer;font-size:medium" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
                             </a-popover>
                         </div>
                     </template>
@@ -30,20 +30,21 @@
                         <span :class="[record.status.phase === 'Bound' ? 'success-status' : 'error-status']">{{ record.status.phase }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'storage'">
-                        <span>{{ record.spec.capacity.storage }}</span>
+                        <span style="color:aquamarine;font-size:medium">{{ record.spec.capacity.storage }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'accessMode'">
-                        <span style="color: rgb(84, 138, 238);font-weight:bold;">{{ record.spec.accessModes[0] }}</span>
+                        <span style="font-size:medium;color:darkseagreen;font-weight:bold;">{{ record.spec.accessModes[0] }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'pvc'">
-                        <span>{{ record.spec.claimRef.name }}</span>
+                        <span v-if="record.status.phase === 'Bound'" style="font-size:medium;color:burlywood">{{ record.spec.claimRef.name }}</span>
+                        <span v-else style="font-size:medium;color:crimson">no relation pvc</span>
                     </template>
                     <template v-if="column.dataIndex === 'creationTimestamp'">
-                        <a-tag color="gray">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
+                        <a-tag style="color:linen;font-size:medium">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button style="margin-bottom:5px;" class="pv-button" type="primary" icon="form-outlined" @click="getPvDetail(record)">YML</c-button>
-                        <c-button class="pv-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delPv)">删除</c-button>
+                        <c-button style="margin-bottom:5px;color:aqua" class="pv-button" type="primary" icon="form-outlined" @click="getPvDetail(record)">YAML</c-button>
+                        <c-button style="color:crimson" class="pv-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delPv)">删除</c-button>
                     </template>
                 </template>
             </a-table>
@@ -90,23 +91,23 @@ export default({
         //表结构
         const columns = ref([
             {
-                title: 'Pv名',
+                title: 'PV',
                 dataIndex: 'name'
             },
             {
-                title: '标签',
+                title: 'label',
                 dataIndex: 'labels'
             },
             {
-                title: '状态',
+                title: 'status',
                 dataIndex: 'status'
             },
             {
-                title: '容量',
+                title: 'storage',
                 dataIndex: 'storage',
             },
             {
-                title: '访问模式',
+                title: 'access mode',
                 dataIndex: 'accessMode',
             },
             {
@@ -118,7 +119,7 @@ export default({
                 dataIndex: 'creationTimestamp'
             },
             {
-                title: '操作',
+                title: 'action',
                 key: 'action',
                 fixed: 'right',
                 width: 200
@@ -304,6 +305,7 @@ export default({
 <style scoped>
     .pv-button {
         margin-right: 5px;
+        width:77px;
     }
     .ant-form-item {
         margin-bottom: 20px;

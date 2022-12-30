@@ -94,7 +94,7 @@
             <a-layout style="padding: 0 24px">
                 <!-- 面包屑 -->
                 <a-breadcrumb style="margin: 5px 0;color:deepskyblue">
-                    <a-breadcrumb-item>console</a-breadcrumb-item>
+                    <a-breadcrumb-item style="color:darkgrey">console</a-breadcrumb-item>
                     <!-- router.currentRoute.value.matched表示路由的match信息，能拿到父路由和子路由的信息 -->
                     <template v-for="(matched,index) in router.currentRoute.value.matched" :key="index">
                         <a-breadcrumb-item v-if="matched.name" style="color:deepskyblue">

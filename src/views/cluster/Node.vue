@@ -6,7 +6,7 @@
             @dataList="getNodeList"/>
        <a-card :bodyStyle="{padding: '10px'}">
             <a-table
-                style="font-size:12px;" 
+                style="font-size:15px;" 
                 :loading="appLoading" 
                 :columns="columns" 
                 :dataSource="nodeList"
@@ -14,24 +14,24 @@
                 @change="handleTableChange">
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.dataIndex === 'name'">
-                        <span style="font-weight: bold;">{{ record.metadata.name }}</span>
+                        <span style="font-weight: bold;color:coral;font-size:medium">{{ record.metadata.name }}</span>
                         <br>
-                        <span style="color: rgb(84, 138, 238);">{{ record.status.addresses[0].address }}</span>
+                        <span style="color:ivory;font-size:medium">{{ record.status.addresses[0].address }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'standard'">
-                        <span>{{ record.status.capacity.cpu }}核{{ specTrans(record.status.capacity.memory) }}G</span>
+                        <span style="color:aquamarine;font-size:medium">{{ record.status.capacity.cpu }}核{{ specTrans(record.status.capacity.memory) }}G</span>
                     </template>
                     <template v-if="column.dataIndex === 'podCidr'">
-                        <a-tag color="geekblue">{{ record.spec.podCIDR }}</a-tag>
+                        <a-tag style="color:orange;font-size:medium">{{ record.spec.podCIDR }}</a-tag>
                     </template>
                     <template v-if="column.dataIndex === 'version'">
-                        <span style="color:rgb(13, 173, 231);">{{ record.status.nodeInfo.kubeletVersion }} </span>
+                        <span style="color:bisque;font-size:medium">{{ record.status.nodeInfo.kubeletVersion }} </span>
                     </template>
-                    <template v-if="column.dataIndex === 'creationTimestamp'">
-                        <a-tag color="gray">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
+                    <template v-if="column.dataIndex === 'creationTimestamp'">3
+                        <a-tag style="font-size:medium" color="color:linen;">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button style="margin-bottom:5px;" class="node-button" type="primary" icon="form-outlined" @click="getNodeDetail(record)">YML</c-button>
+                        <c-button style="margin-bottom:5px;color:aqua" class="node-button" type="primary" icon="form-outlined" @click="getNodeDetail(record)">YML</c-button>
                     </template>
                 </template>
             </a-table>
@@ -43,6 +43,7 @@
             :confirm-loading="appLoading"
             cancelText="取消"
             okText="更新"
+            @ok="updateNode"
             :ok-button-props="{ disabled: true }">
             <!-- codemirror编辑器 -->
             <!-- border 带边框 -->
@@ -76,20 +77,21 @@ export default({
         //表结构
         const columns = ref([
             {
-                title: 'Node名',
+                title: 'Node',
                 dataIndex: 'name'
             },
             {
-                title: '规格',
+                title: 'standard',
                 dataIndex: 'standard'
             },
             {
                 //pod的网段 一般有service pod cluster
-                title: 'POD-CIDR',
+                title: 'Pod-CIDR',
                 dataIndex: 'podCidr',
             },
             {
-                title: '版本',
+                //k8s version
+                title: 'vesion',
                 dataIndex: 'version',
             },
             {
@@ -97,7 +99,7 @@ export default({
                 dataIndex: 'creationTimestamp'
             },
             {
-                title: '操作',
+                title: 'action',
                 key: 'action',
                 fixed: 'right',
                 width: 100
@@ -141,7 +143,14 @@ export default({
                 cluster: ''
             }
         })
-
+        // const updateNodeData = reactive({
+        //     url: common.k8sNodeUpdate,
+        //     params: {
+        //         namespace: '',
+        //         content: '',
+        //         cluster: ''
+        //     }
+        // })
         //【方法】
         function specTrans(str) {
             if ( str.indexOf('Ki') == -1 ) {
@@ -221,6 +230,27 @@ export default({
             })
         }
 
+        // function updateNode(){
+        //     appLoading.value = true
+        //     //将yaml格式的pod对象转为json web(http) restful 底层http 接送编码居多
+        //     //JSON.stringify序列化 json编码 transObj:yaml转成obj
+        //     let content = JSON.stringify(transObj(contentYaml.value))
+        //     updatePodData.params.namespace = namespaceValue.value
+        //     updatePodData.params.content = content
+        //     updatePodData.params.cluster = localStorage.getItem('k8s_cluster')
+        //     //httpclient 发起请求 修改put (restful patch部分更新 update全量更新)
+        //     httpClient.put(updatePodData.url, updatePodData.params)
+        //     .then(res => {
+        //         message.success(res.msg)
+        //     })
+        //     .catch(res => {
+        //         message.error(res.msg)
+        //     })
+        //     .finally(() => {
+        //         getPodList()
+        //         yamlModal.value = false
+        //     })
+        // }
         return {
             appLoading,
             pagination,
@@ -237,7 +267,8 @@ export default({
             getNodeList,
             getNodeDetail,
             onChange,
-            specTrans
+            specTrans,
+            //updateNode
         }
     },
 })

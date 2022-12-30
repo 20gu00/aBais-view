@@ -10,7 +10,7 @@
        <a-card :bodyStyle="{padding: '10px'}">
         <!--表格 用于展示多条结构类似的数据，可对数据进行排序、筛选、对比或 其他自定义操作-->
             <a-table
-                style="font-size:12px;" 
+                style="font-size:15px;" 
                 :loading="appLoading" 
                 :columns="columns" 
                 :dataSource="namespaceList"
@@ -18,7 +18,7 @@
                 @change="handleTableChange">
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.dataIndex === 'name'">
-                        <span style="font-weight: bold;">{{ record.metadata.name }}</span>
+                        <span style="font-weight: bold;color:coral;font-size:medium">{{ record.metadata.name }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'labels'">
                         <div v-for="(val, key) in record.metadata.labels" :key="key">
@@ -26,7 +26,7 @@
                                 <template #content>
                                     <span>{{ key + ":" +val }}</span>
                                 </template>
-                                <a-tag style="margin-bottom:5px;cursor:pointer;" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
+                                <a-tag style="margin-bottom:5px;cursor:pointer;font-size:medium" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
                             </a-popover>
                         </div>
                     </template>
@@ -34,11 +34,11 @@
                         <span :class="[record.status.phase === 'Active' ? 'success-status' : 'error-status']">{{ record.status.phase }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'creationTimestamp'">
-                        <a-tag color="gray">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
+                        <a-tag style="color:linen;font-size:medium">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button style="margin-bottom:5px;" class="namespace-button" type="primary" icon="form-outlined" @click="getNamespaceDetail(record)">YML</c-button>
-                        <c-button class="namespace-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delNamespace)">删除</c-button>
+                        <c-button style="margin-bottom:5px;color:aqua" class="namespace-button" type="primary" icon="form-outlined" @click="getNamespaceDetail(record)">YML</c-button>
+                        <c-button satyle="color:crimson" class="namespace-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delNamespace)">删除</c-button>
                     </template>
                 </template>
             </a-table>
@@ -85,15 +85,15 @@ export default({
         //表结构
         const columns = ref([
             {
-                title: 'Namespace名',
+                title: 'Namespace',
                 dataIndex: 'name'
             },
             {
-                title: '标签',
+                title: 'label',
                 dataIndex: 'labels'
             },
             {
-                title: '状态',
+                title: 'status',
                 dataIndex: 'status',
             },
             {
@@ -101,7 +101,7 @@ export default({
                 dataIndex: 'creationTimestamp'
             },
             {
-                title: '操作',
+                title: 'action',
                 key: 'action',
                 fixed: 'right',
                 width: 200
