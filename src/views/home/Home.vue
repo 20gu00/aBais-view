@@ -2,39 +2,40 @@
     <div>
         <a-spin :spinning="appLoading">
             <a-collapse v-model:activeKey="activeKey" ghost>
-                <a-collapse-panel style="font-size:18px;" key="1" header="概览">
+                <a-collapse-panel style="font-size:22px;" key="1" header="Overview">
                     <a-row class="home-row1">
-                        <a-col :span="7">
-                            <div style="font-size:13px;">名称</div>
-                            <div style="text-align:center;font-size:30px;font-weight:bold;">KubeA</div>
+                        <!-- <a-col :span="7">
+                            <div style="font-size:19px;">k8s运维平台</div>
+                            <div style="text-align:center;font-size:30px;font-weight:bold;">aBais</div>
+                        </a-col> -->
+                        <!-- <a-divider type="vertical" style="height: 70px; background-color: rgb(89, 104, 173)" /> -->
+                        <a-col :span="22">
+                            <div style="font-size:19px;">Clusters</div>
+                            <div style="text-align:center;font-size:55px;font-weight:bold;">{{ clusterNum }}</div>
                         </a-col>
-                        <a-divider type="vertical" style="height: 70px; background-color: rgb(89, 104, 173)" />
-                        <a-col :span="7">
-                            <div style="font-size:13px;">集群数</div>
-                            <div style="text-align:center;font-size:30px;font-weight:bold;">{{ clusterNum }}</div>
-                        </a-col>
-                        <a-divider type="vertical" style="height: 70px; background-color: rgb(89, 104, 173)" />
-                        <a-col :span="7">
-                            <div style="font-size:13px;">版本</div>
+                        <!-- <a-divider type="vertical" style="height: 70px; background-color: rgb(89, 104, 173)" /> -->
+                        <!-- <a-col :span="7">
+                            <div style="font-size:19px;">版本</div>
                             <div style="text-align:center;font-size:30px;font-weight:bold;">v1.0.0</div>
-                        </a-col>
+                        </a-col> -->
                     </a-row>
                     <a-row :gutter="10"> 
                         <template v-for="val,key in resourceList" :key="key">
                             <a-col :span="4" style="margin-bottom:10px;">
-                                <a-card :bordered="false" style="background-color:rgb(33, 46, 64)" :bodyStyle="{padding: '10px'}">
+                                <a-card :bordered="false" style="background-color:cornflowerblue" :bodyStyle="{padding: '20px'}">
+                                    <!--float:right-->
                                     <div style="float:left;margin:15px 10px 0px">
                                         <a-progress
                                         :width="40"
                                         :strokeWidth="18"
                                         :stroke-color="color"
                                         :percent="100"
-                                        :showInfo="false"
+                                        :showInfo="true"
                                         type="circle"
                                         />
                                     </div>
                                     <div style="text-align:center;">
-                                        <span style="font-size:14px;">{{ key }}</span>
+                                        <span style="font-size:20px;">{{ key }}</span>
                                         <br/>
                                         <span style="font-size:30px;font-weight:bold;">{{ resourceList[key] }}</span>
                                     </div>
@@ -43,19 +44,19 @@
                         </template>
                     </a-row>
                 </a-collapse-panel>
-                <a-collapse-panel style="font-size:18px;" key="2" header="事件">
-                    <div style="text-align:right;margin-bottom:10px;">
+                <a-collapse-panel style="font-size:22px;" key="2" header="Events">
+                    <div style="text-align:left;margin-bottom:5px;">
                         <a-input-search
                         allow-clear
                         v-model:value="searchValue"
-                        placeholder="请输入资源名"
-                        style="width: 200px"
+                        placeholder="关键词"
+                        style="width: 200px;margin-bottom:5px;" 
                         @search="getEventList"
                         />
                     </div>
                     <a-card :bodyStyle="{padding: '10px'}">
                         <a-table 
-                            style="font-size:12px;" 
+                            style="font-size:15px;" 
                             :loading="appLoading" 
                             :columns="columns" 
                             :data-source="eventList"
@@ -63,10 +64,19 @@
                             @change="handleTableChange">
                             <template #bodyCell="{ column, record }">
                                 <template v-if="column.dataIndex === 'name'">
-                                    <a style="color: rgb(84, 138, 238);font-weight: bold;">{{ record.name }}</a>
+                                    <a style="color:aquamarine;font-weight: bold;">{{ record.name }}</a>
+                                </template>
+                                <template v-if="column.dataIndex === 'kind'">
+                                    <a style="color:dodgerblue;font-weight: bold;">{{ record.kind }}</a>
                                 </template>
                                 <template v-if="column.dataIndex === 'event_time'">
-                                    <span>{{ timeTrans(record.event_time) }}</span>
+                                    <span style="color:ghostwhite">{{ timeTrans(record.event_time) }}</span>
+                                </template>
+                                <template v-if="column.dataIndex === 'cluster'">
+                                    <span style="color:cornsilk">{{ record.cluster }}</span>
+                                </template>
+                                <template v-if="column.dataIndex === 'message'">
+                                    <span style="color:orange">{{ record.message }}</span>
                                 </template>
                             </template>
                         </a-table>
@@ -89,37 +99,37 @@ export default ({
         const activeKey = ref(['1', '2'])
         const columns = ref([
             {
-                title: '资源名',
+                title: 'resource name',
                 dataIndex: 'name',
             },
             {
-                title: '资源类型',
+                title: 'resource kind',
                 dataIndex: 'kind',
-                width: 150,
+                width: 130,
             },
             {
-                title: '命名空间',
+                title: 'namespace',
                 dataIndex: 'namespace',
             },
             {
-                title: '状态',
+                title: 'status',
                 dataIndex: 'rtype',
             },
             {
-                title: '原因',
+                title: 'reason',
                 dataIndex: 'reason',
             },
             {
-                title: '描述',
+                title: 'message',
                 dataIndex: 'message',
                 width: 500,
             },
             {
-                title: '事件时间',
+                title: 'event time',
                 dataIndex: 'event_time',
             },
             {
-                title: '集群',
+                title: 'cluster',
                 dataIndex: 'cluster',
             },
         ])
@@ -135,7 +145,7 @@ export default ({
             total: 0,
             currentPage: 1,
             pagesize: 10,
-            pageSizeOptions: ["10", "20", "50", "100"],
+            pageSizeOptions: ["10", "20", "50", "100","200","500","1000"],
             showTotal: total => `共 ${total} 条`
 
         })
@@ -240,10 +250,12 @@ export default ({
 })
 </script>
 
+<!--rgb(40, 46, 58) !important;-->
 <style scoped>
     .home-row1 {
-        background-color: rgb(40, 46, 58) !important;
-        padding: 20px;
-        margin-bottom: 15px;
+        background-color:rgba(117, 213, 141, 0.591);
+        padding: 35px;
+        margin-bottom: 20px;
+        width:220px;
     }
 </style>
