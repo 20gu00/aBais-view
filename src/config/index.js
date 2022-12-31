@@ -58,22 +58,22 @@ export default {
     //pv
     k8sPvList: baseHost + '/api/v1/k8s/pvs',
     k8sPvDetail: baseHost + '/api/v1/k8s/pv/detail',
-    k8sPvDel: baseHost + '/api/v1/k8s/pv/del',
+    k8sPvDel: baseHost + '/api/v1/k8s/pv/delete',
     //configmap
     k8sConfigmapList: baseHost + '/api/v1/k8s/configmaps',
     k8sConfigmapDetail: baseHost + '/api/v1/k8s/configmap/detail',
     k8sConfigmapUpdate: baseHost + '/api/v1/k8s/configmap/update',
-    k8sConfigmapDel: baseHost + '/api/v1/k8s/configmap/del',
+    k8sConfigmapDel: baseHost + '/api/v1/k8s/configmap/delete',
     //secret
     k8sSecretList: baseHost + '/api/v1/k8s/secrets',
     k8sSecretDetail: baseHost + '/api/v1/k8s/secret/detail',
     k8sSecretUpdate: baseHost + '/api/v1/k8s/secret/update',
-    k8sSecretDel: baseHost + '/api/v1/k8s/secret/del',
+    k8sSecretDel: baseHost + '/api/v1/k8s/secret/delete',
     //pvc
-    k8sPvctList: baseHost + '/api/v1/k8s/pvcs',
+    k8sPvcList: baseHost + '/api/v1/k8s/pvcs',
     k8sPvcDetail: baseHost + '/api/v1/k8s/pvc/detail',
     k8sPvcUpdate: baseHost + '/api/v1/k8s/pvc/update',
-    k8sPvcDel: baseHost + '/api/v1/k8s/pvc/del',
+    k8sPvcDel: baseHost + '/api/v1/k8s/pvc/delete',
     //release
     helmReleaseList: baseHost + '/api/v1/helmstore/releases',
     helmReleaseDetail: baseHost + '/api/v1/helmstore/release/detail',

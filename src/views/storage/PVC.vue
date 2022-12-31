@@ -1,14 +1,14 @@
 <template>
     <div>
         <MainHead
-            searchDescribe="请输入"
+            searchDescribe="关键词"
             @searchChange="getSearchValue"
             namespace
             @namespaceChange="getNamespaceValue"
             @dataList="getPvcList"/>
        <a-card :bodyStyle="{padding: '10px'}">
             <a-table
-                style="font-size:12px;" 
+                style="font-size:15px;" 
                 :loading="appLoading" 
                 :columns="columns" 
                 :dataSource="pvcList"
@@ -32,7 +32,8 @@
                         <span :class="[record.status.phase === 'Bound' ? 'success-status' : 'error-status']">{{ record.status.phase }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'storage'">
-                        <span>{{ record.status.capacity.storage }}</span>
+                        <span v-if="record.status.phase !== 'Bound'">{{ request+":"+record.spec.resources.requests.storage }}</span>
+                        <span v-if="record.status.phase === 'Bound'">{{ record.status.capacity.storage }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'accessMode'">
                         <span style="color: rgb(84, 138, 238);font-weight:bold;">{{ record.status.accessModes[0] }}</span>
@@ -92,23 +93,23 @@ export default({
         //表结构
         const columns = ref([
             {
-                title: 'Pvc名',
+                title: 'PVC',
                 dataIndex: 'name'
             },
             {
-                title: '标签',
+                title: 'label',
                 dataIndex: 'labels'
             },
             {
-                title: '状态',
+                title: 'status',
                 dataIndex: 'status'
             },
             {
-                title: '容量',
+                title: 'storage',
                 dataIndex: 'storage',
             },
             {
-                title: '访问模式',
+                title: 'AccessMode',
                 dataIndex: 'accessMode',
             },
             {
@@ -120,7 +121,7 @@ export default({
                 dataIndex: 'creationTimestamp'
             },
             {
-                title: '操作',
+                title: 'action',
                 key: 'action',
                 fixed: 'right',
                 width: 200
@@ -137,7 +138,7 @@ export default({
             total: 0,
             currentPage: 1,
             pagesize: 10,
-            pageSizeOptions: ["10", "20", "50", "100"],
+            pageSizeOptions: ["10", "20", "50", "100","200","500","1000"],
             showTotal: total => `共 ${total} 条`
         })
         //列表

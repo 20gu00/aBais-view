@@ -1,14 +1,14 @@
 <template>
     <div>
         <MainHead
-            searchDescribe="请输入"
+            searchDescribe="关键词"
             @searchChange="getSearchValue"
             namespace
             @namespaceChange="getNamespaceValue"
             @dataList="getConfigmapList"/>
        <a-card :bodyStyle="{padding: '10px'}">
             <a-table
-                style="font-size:12px;" 
+                style="font-size:15px;" 
                 :loading="appLoading" 
                 :columns="columns" 
                 :dataSource="configmapList"
@@ -16,7 +16,7 @@
                 @change="handleTableChange">
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.dataIndex === 'name'">
-                        <span style="font-weight: bold;">{{ record.metadata.name }}</span>
+                        <span style="font-weight: bold;color:coral;font-size:medium">{{ record.metadata.name }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'labels'">
                         <div v-for="(val, key) in record.metadata.labels" :key="key">
@@ -24,25 +24,25 @@
                                 <template #content>
                                     <span>{{ key + ":" +val }}</span>
                                 </template>
-                                <a-tag style="margin-bottom:5px;cursor:pointer;" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
+                                <a-tag style="width:190px;margin-bottom:5px;cursor:pointer;font-size:medium" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
                             </a-popover>
                         </div>
                     </template>
                     <template v-if="column.dataIndex === 'data'">
                         <a-popover
-                            :overlayStyle="{width:'520px'}">
+                            :overlayStyle="{width:'530px'}">
                             <template #content>
-                                <div style="width:500px;height:300px;word-break:break-all;overflow-y:auto;">{{ record.data }}</div>
+                                <div style="color:aquamarine; width:500px;height:500px;word-break:break-all;overflow-y:auto;">{{ record.data }}</div>
                             </template>
                             <file-text-outlined style="font-size: 15px;" />
                         </a-popover>
                     </template>
                     <template v-if="column.dataIndex === 'creationTimestamp'">
-                        <a-tag color="gray">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
+                        <a-tag style="color:linen;font-size:medium">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button style="margin-bottom:5px;" class="configmap-button" type="primary" icon="form-outlined" @click="getConfigmapDetail(record)">YML</c-button>
-                        <c-button class="configmap-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delConfigmap)">删除</c-button>
+                        <c-button style="margin-bottom:5px;color:aqua" class="configmap-button" type="primary" icon="form-outlined" @click="getConfigmapDetail(record)">YML</c-button>
+                        <c-button style="margin-bottom:5px;color:crimson" class="configmap-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delConfigmap)">删除</c-button>
                     </template>
                 </template>
             </a-table>
@@ -89,23 +89,27 @@ export default({
         //表结构
         const columns = ref([
             {
-                title: 'Configmap名',
-                dataIndex: 'name'
+                title: 'Configmap',
+                dataIndex: 'name',
+                width:300
             },
             {
-                title: '标签',
-                dataIndex: 'labels'
+                title: 'label',
+                dataIndex: 'labels',
+                width:300
             },
             {
                 title: 'DATA',
                 dataIndex: 'data',
+                width:100
             },
             {
                 title: '创建时间',
-                dataIndex: 'creationTimestamp'
+                dataIndex: 'creationTimestamp',
+                width:200
             },
             {
-                title: '操作',
+                title: 'action',
                 key: 'action',
                 fixed: 'right',
                 width: 200
@@ -122,7 +126,7 @@ export default({
             total: 0,
             currentPage: 1,
             pagesize: 10,
-            pageSizeOptions: ["10", "20", "50", "100"],
+            pageSizeOptions: ["10", "20", "50", "100","200","500","1000"],
             showTotal: total => `共 ${total} 条`
         })
         //列表
@@ -331,6 +335,7 @@ export default({
 <style scoped>
     .configmap-button {
         margin-right: 5px;
+        width:77px;
     }
     .ant-form-item {
         margin-bottom: 20px;

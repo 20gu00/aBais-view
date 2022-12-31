@@ -27,7 +27,7 @@
                                 <template #content>
                                     <span>{{ key + ":" +val }}</span>
                                 </template>
-                                <a-tag style="width:140px;margin-bottom:5px;cursor:pointer;font-size:medium" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
+                                <a-tag style="width:190px;margin-bottom:5px;cursor:pointer;font-size:medium" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
                             </a-popover>
                         </div>
                     </template>

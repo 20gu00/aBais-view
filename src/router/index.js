@@ -198,7 +198,7 @@ router.beforeEach((to, from, next) => {
     if (to.meta.title) {
         document.title = to.meta.title
     } else {
-        document.title = "kubeA"
+        document.title = "aBais"  //无关紧要
     }
     //放行
     next()
