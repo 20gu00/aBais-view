@@ -26,7 +26,7 @@
                                 <template #content>
                                     <span>{{ key + ":" +val }}</span>
                                 </template>
-                                <a-tag style="margin-bottom:5px;cursor:pointer;font-size:medium" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
+                                <a-tag style="width:310px; margin-bottom:5px;cursor:pointer;font-size:medium" color="blue">{{ ellipsis(key + ":" +val, 40) }}</a-tag>
                             </a-popover>
                         </div>
                     </template>
@@ -37,7 +37,7 @@
                         <a-tag style="color:linen;font-size:medium">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button style="margin-bottom:5px;color:aqua" class="namespace-button" type="primary" icon="form-outlined" @click="getNamespaceDetail(record)">YML</c-button>
+                        <c-button style="margin-bottom:5px;color:aqua" class="namespace-button" type="primary" icon="form-outlined" @click="getNamespaceDetail(record)">YAML</c-button>
                         <c-button satyle="color:crimson" class="namespace-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delNamespace)">删除</c-button>
                     </template>
                 </template>
@@ -90,7 +90,8 @@ export default({
             },
             {
                 title: 'label',
-                dataIndex: 'labels'
+                dataIndex: 'labels',
+                width:350
             },
             {
                 title: 'status',
