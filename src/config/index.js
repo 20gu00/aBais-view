@@ -11,7 +11,7 @@ export default {
     //namespace
     k8sNamespaceList: baseHost + '/api/v1/k8s/namespaces',
     k8sNamespaceDetail: baseHost + '/api/v1/k8s/namespace/detail',
-    k8sNamespaceDel: baseHost + '/api/v1/k8s/namespace/del',
+    k8sNamespaceDel: baseHost + '/api/v1/k8s/namespace/delete',
     //deployment
     k8sDeploymentList: baseHost + '/api/v1/k8s/deployments',
     k8sDeploymentDetail: baseHost + '/api/v1/k8s/deployment/detail',
@@ -26,9 +26,10 @@ export default {
     k8sPodDetail: baseHost + '/api/v1/k8s/pod/detail',
     k8sPodUpdate: baseHost + '/api/v1/k8s/pod/update',
     k8sPodDel: baseHost + '/api/v1/k8s/pod/delete',
-    k8sPodContainer: baseHost + '/api/v1/k8s/pod/container',
+    k8sPodContainer: baseHost + '/api/v1/k8s/pod/containers',
     k8sPodLog: baseHost + '/api/v1/k8s/pod/log',
-    k8sPodNumNp: baseHost + '/api/v1/k8s/pod/numnp',
+    k8sPodNumNp: baseHost + '/api/v1/k8s/pod/numns',
+    //terminal
     k8sTerminalWs: 'ws://localhost:9091/ws',
     //ingress
     k8sIngressList: baseHost + '/api/v1/k8s/ingresses',
@@ -40,7 +41,7 @@ export default {
     k8sSvcList: baseHost + '/api/v1/k8s/services',
     k8sSvcDetail: baseHost + '/api/v1/k8s/service/detail',
     k8sSvcUpdate: baseHost + '/api/v1/k8s/service/update',
-    k8sSvcDel: baseHost + '/api/v1/k8s/service/del',
+    k8sSvcDel: baseHost + '/api/v1/k8s/service/delete',
     k8sSvcCreate: baseHost + '/api/v1/k8s/service/create',
     //daemonset
     k8sDaemonSetList: baseHost + '/api/v1/k8s/daemonsets',
@@ -51,7 +52,7 @@ export default {
     k8sStatefulSetList: baseHost + '/api/v1/k8s/statefulsets',
     k8sStatefulSetDetail: baseHost + '/api/v1/k8s/statefulset/detail',
     k8sStatefulSetUpdate: baseHost + '/api/v1/k8s/statefulset/update',
-    k8sStatefulSetDel: baseHost + '/api/v1/k8s/statefulset/del',
+    k8sStatefulSetDel: baseHost + '/api/v1/k8s/statefulset/delete',
     //node
     k8sNodeList: baseHost + '/api/v1/k8s/nodes',
     k8sNodeDetail: baseHost + '/api/v1/k8s/node/detail',
@@ -83,9 +84,9 @@ export default {
     helmChartList: baseHost + '/api/v1/helmstore/charts',
     helmChartAdd: baseHost + '/api/v1/helmstore/chart/add',
     helmChartUpdate: baseHost + '/api/v1/helmstore/chart/update',
-    helmChartDel: baseHost + '/api/v1/helmstore/chart/del',
+    helmChartDel: baseHost + '/api/v1/helmstore/chart/delete',
     helmChartFileUpload: baseHost + '/api/v1/helmstore/chartfile/upload',
-    helmChartFileDel: baseHost + '/api/v1/helmstore/chartfile/del',
+    helmChartFileDel: baseHost + '/api/v1/helmstore/chartfile/delete',
     //编辑器配置
     cmOptions: {
         // 语言及语法模式
