@@ -34,7 +34,12 @@
                         <!--块 进行排版 align left 居左，默认 right 居右 center 居中 justify-->
                         <!--class类 亮点和描述-->
                         <div :class="{'succ-dot':record.status.phase == 'Running', 'warn-dot':record.status.phase == 'Pending', 'err-dot':record.status.phase != 'Running' && record.status.phase != 'Pending'}"></div>
-                        <span :class="{'succ-state':record.status.phase == 'Running', 'warn-state':record.status.phase == 'Pending', 'err-status':record.status.phase != 'Running' && record.status.phase != 'Pending'}">{{ record.status.phase }} </span>
+                        <div v-for="(val,key) in record.status.containerStatuses" :key="key">
+                               <span v-if="val.ready !==true">{{readyToFalse()}}</span>
+                               <span v-else>{{ readyToTrue() }}</span>
+                        </div>
+                        <div v-if="allContainerReady===false" style="font-size:medium;color:gainsboro">not all container ready</div>
+                        <div v-else :class="{'succ-state':record.status.phase == 'Running', 'warn-state':record.status.phase == 'Pending', 'err-status':record.status.phase != 'Running' && record.status.phase != 'Pending'}">{{ record.status.phase }} </div>
                     </template>
                     <template v-if="column.dataIndex === 'restarts'">
                          <span style="color:cadetblue;font-size:medium">{{ restartTotal(record) }} </span>
@@ -140,37 +145,42 @@ export default({
         //定column
         const columns = ref([
             {
-                title: 'pod名称',
+                title: 'Pod',
                 //索引
-                dataIndex: 'name'
+                dataIndex: 'name',
+                width:350
             },
             {
                 title: 'node',
-                dataIndex: 'node'
+                dataIndex: 'node',
+                width:200
             },
             {
                 title: 'status',
                 dataIndex: 'state',
-                width: 120
+                width: 200
             },
             {
                 title: '重启次数',
-                dataIndex: 'restarts'
+                dataIndex: 'restarts',
+                width:100
             },
             {
                 title: 'image',
-                dataIndex: 'image'
+                dataIndex: 'image',
+                width:150
             },
             {
                 title: '创建时间',
-                dataIndex: 'creationTimestamp'
+                dataIndex: 'creationTimestamp',
+                width:190
             },
             {
                 title: 'action',
                 key: 'action',
                 //靠右满 宽度
                 fixed: 'right',
-                width: 200
+                width: 190
             }
         ])
         //常用项
@@ -218,6 +228,7 @@ export default({
         //yaml
         const contentYaml = ref('')
         //对话框
+        const allContainerReady=ref(true)
         const yamlModal = ref(false)
         const cmOptions = common.cmOptions
         //pod metadata
@@ -444,6 +455,12 @@ export default({
                 // }
             })
         }
+        function readyToFalse(){
+            allContainerReady.value=false
+        }
+        function readyToTrue(){
+            allContainerReady.value=true
+        }
         //return出去才能使用
         return {
             appLoading,
@@ -454,6 +471,7 @@ export default({
             contentYaml,
             yamlModal,
             cmOptions,
+            allContainerReady,
             timeTrans,
             ellipsis,
             restartTotal,
@@ -467,7 +485,9 @@ export default({
             delPod,
             gotoTerminal,
             gotoLog,
-            showConfirm
+            showConfirm,
+            readyToFalse,
+            readyToTrue
         }
     },
 })
