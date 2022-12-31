@@ -1,7 +1,7 @@
 <template>
     <div>
         <MainHead
-            searchDescribe="请输入"
+            searchDescribe="关键词"
             @searchChange="getSearchValue"
             namespace
             @namespaceChange="getNamespaceValue"
@@ -11,7 +11,7 @@
             @addFunc="handleAdd"/>
        <a-card :bodyStyle="{padding: '10px'}">
             <a-table
-                style="font-size:12px;" 
+                style="font-size:15px;" 
                 :loading="appLoading" 
                 :columns="columns" 
                 :dataSource="ingressList"
@@ -19,7 +19,7 @@
                 @change="handleTableChange">
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.dataIndex === 'name'">
-                        <span style="font-weight: bold;">{{ record.metadata.name }}</span>
+                        <span style="font-weight: bold;color:coral;font-size:medium">{{ record.metadata.name }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'labels'">
                         <div v-for="(val, key) in record.metadata.labels" :key="key">
@@ -27,7 +27,7 @@
                                 <template #content>
                                     <span>{{ key + ":" +val }}</span>
                                 </template>
-                                <a-tag style="margin-bottom:5px;cursor:pointer;" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
+                                <a-tag style="width:140px;margin-bottom:5px;cursor:pointer;font-size:medium" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
                             </a-popover>
                         </div>
                     </template>
@@ -35,34 +35,48 @@
                         <div v-for="(val, key) in record.spec.rules" :key="key">
                             <a-popover>
                                 <template #content>
-                                    <span>{{ val.host }}</span>
+                                    <span>{{ key+1+":  "+val.host }}</span>
                                 </template>
-                                <a-tag style="margin-bottom:5px;cursor:pointer;" color="green">{{ ellipsis(val.host, 15) }}</a-tag>
+                                <a-tag style="width:140px; font-size:medium;color:azure;margin-bottom:5px;cursor:pointer;" color="green">{{ ellipsis(key+1+":  "+val.host, 15) }}</a-tag>
                             </a-popover>
                         </div>
                     </template>
                     <template v-if="column.dataIndex === 'path'">
-                        <div v-for="(val, key) in record.spec.rules" :key="key">
-                            <a-popover>
-                                <template #content>
-                                    <span>{{ val.http.paths[0].path }}</span>
-                                </template>
-                                <a-tag style="margin-bottom:5px;cursor:pointer;" color="green">{{ ellipsis(val.http.paths[0].path, 15) }}</a-tag>
-                            </a-popover>
+                        <div v-for="(val, key1) in record.spec.rules" :key="key1">  
+                            <div v-for="(val2, key) in val.http.paths" :key="key">
+                                    <a-popover>
+                                        <template #content>
+                                            <span>{{ key1+1+":   "+val2.path }}</span>
+                                        </template>
+                                        <a-tag style="width:140px;margin-bottom:5px;cursor:pointer;font-size:medium" color="green">{{ ellipsis(key1+1+":  "+val2.path, 15) }}</a-tag>
+                                    </a-popover>
+                            </div>
+                        </div>
+                    </template>
+                    <template v-if="column.dataIndex === 'backend'">
+                        <div v-for="(val, key1) in record.spec.rules" :key="key1">  
+                            <div v-for="(val2, key) in val.http.paths" :key="key">
+                                    <a-popover>
+                                        <template #content>
+                                            <span>{{ key1+1+":   "+val2.backend.service.name+":"+val2.backend.service.port.number }}</span>
+                                        </template>
+                                        <a-tag style="width:140px;margin-bottom:5px;cursor:pointer;font-size:medium;color:aquamarine" color="green">{{ ellipsis(key1+1+":  "+val2.backend.service.name+":"+val2.backend.service.port.number, 17) }}</a-tag>
+                                    </a-popover>
+                            </div>
                         </div>
                     </template>
                     <template v-if="column.dataIndex === 'external-ip'">
-                        <span>{{ record.status.loadBalancer.ingress ? record.status.loadBalancer.ingress[0].ip : '' }} </span>
+                        <span style="font-size:medium;color:burlywood">{{ record.status.loadBalancer.ingress ? record.status.loadBalancer.ingress[0].ip : '' }} </span>
                     </template>
                     <template v-if="column.dataIndex === 'tls'">
-                        <span>{{ record.spec.tls ? 'YES' : '' }} </span>
+                        <span style="font-size:medium;color:gold">{{ record.spec.tls ? 'YES' : 'NO' }} </span>
                     </template>
                     <template v-if="column.dataIndex === 'creationTimestamp'">
-                        <a-tag color="gray">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
+                        <a-tag style="color:linen;font-size:medium">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button style="margin-bottom:5px;" class="ingress-button" type="primary" icon="form-outlined" @click="getIngressDetail(record)">YML</c-button>
-                        <c-button class="ingress-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delIngress)">删除</c-button>
+                        <c-button style="margin-bottom:5px;color:aqua" class="ingress-button" type="primary" icon="form-outlined" @click="getIngressDetail(record)">YAML</c-button>
+                        <c-button style="margin-bottom:5px;color:crimson" class="ingress-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delIngress)">删除</c-button>
                     </template>
                 </template>
             </a-table>
@@ -182,20 +196,26 @@ export default({
         //表结构
         const columns = ref([
             {
-                title: 'Ingress名',
-                dataIndex: 'name'
+                title: 'Ingress',
+                dataIndex: 'name',
+                width:200
             },
             {
-                title: '标签',
-                dataIndex: 'labels'
+                title: 'label',
+                dataIndex: 'labels',
+                width: 200
             },
             {
-                title: 'Host',
+                title: 'host',
                 dataIndex: 'host',
             },
             {
-                title: 'Path',
-                dataIndex: 'path'
+                title: 'path',
+                dataIndex: 'path',
+            },
+            {
+                title:'backend',
+                dataIndex:'backend'
             },
             {
                 title: 'EXTERNAL-IP',
@@ -210,7 +230,7 @@ export default({
                 dataIndex: 'creationTimestamp'
             },
             {
-                title: '操作',
+                title: 'action',
                 key: 'action',
                 fixed: 'right',
                 width: 200
@@ -228,7 +248,7 @@ export default({
             total: 0,
             currentPage: 1,
             pagesize: 10,
-            pageSizeOptions: ["10", "20", "50", "100"],
+            pageSizeOptions: ["10", "20", "50", "100","200","500","1000"],
             showTotal: total => `共 ${total} 条`
         })
         //列表
@@ -558,6 +578,7 @@ export default({
 <style scoped>
     .ingress-button {
         margin-right: 5px;
+        width:77px;
     }
     .ant-form-item {
         margin-bottom: 20px;

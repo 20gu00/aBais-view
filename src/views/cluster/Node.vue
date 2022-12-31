@@ -27,7 +27,7 @@
                     <template v-if="column.dataIndex === 'version'">
                         <span style="color:bisque;font-size:medium">{{ record.status.nodeInfo.kubeletVersion }} </span>
                     </template>
-                    <template v-if="column.dataIndex === 'creationTimestamp'">3
+                    <template v-if="column.dataIndex === 'creationTimestamp'">
                         <a-tag style="font-size:medium" color="color:linen;">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
