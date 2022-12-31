@@ -16,7 +16,7 @@
                 @change="handleTableChange">
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.dataIndex === 'name'">
-                        <span style="font-weight: bold;">{{ record.metadata.name }}</span>
+                        <span style="font-weight: bold;font-size:medium">{{ record.metadata.name }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'labels'">
                         <div v-for="(val, key) in record.metadata.labels" :key="key">
@@ -24,7 +24,7 @@
                                 <template #content>
                                     <span>{{ key + ":" +val }}</span>
                                 </template>
-                                <a-tag style="margin-bottom:5px;cursor:pointer;" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
+                                <a-tag style="width:190px;margin-bottom:5px;cursor:pointer;font-size:medium" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
                             </a-popover>
                         </div>
                     </template>
@@ -32,21 +32,22 @@
                         <span :class="[record.status.phase === 'Bound' ? 'success-status' : 'error-status']">{{ record.status.phase }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'storage'">
-                        <span v-if="record.status.phase !== 'Bound'">{{ request+":"+record.spec.resources.requests.storage }}</span>
-                        <span v-if="record.status.phase === 'Bound'">{{ record.status.capacity.storage }}</span>
+                        <span v-if="record.status.phase === 'Bound'" style="font-size:medium;color:burlywood">{{ record.status.capacity.storage }}</span>
+                        <span v-else style="font-size:medium;color:gold">{{ "Not Bound!"+" "+"expect"+":"+" "+record.spec.resources.requests.storage }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'accessMode'">
-                        <span style="color: rgb(84, 138, 238);font-weight:bold;">{{ record.status.accessModes[0] }}</span>
+                        <span v-if="record.status.phase === 'Bound'" style="font-size:medium;color:greenyellow;font-weight:bold;">{{ record.status.accessModes }}</span>
+                        <span v-else style="font-size:medium;color:gold">{{ "Not Bound!"+" "+"expect"+":"+" "+record.spec.accessModes }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'storageclass'">
-                        <span>{{ record.spec.storageClassName }}</span>
+                        <span style="font-size:medium;color:blueviolet">{{ record.spec.storageClassName }}</span>
                     </template>
                     <template v-if="column.dataIndex === 'creationTimestamp'">
-                        <a-tag color="gray">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
+                        <a-tag style="color:linen;font-size:medium">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button style="margin-bottom:5px;" class="pvc-button" type="primary" icon="form-outlined" @click="getPvcDetail(record)">YML</c-button>
-                        <c-button class="pvc-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delPvc)">删除</c-button>
+                        <c-button style="margin-bottom:5px;color:aqua" class="pvc-button" type="primary" icon="form-outlined" @click="getPvcDetail(record)">YAML</c-button>
+                        <c-button style="color:crimson" class="pvc-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delPvc)">删除</c-button>
                     </template>
                 </template>
             </a-table>
@@ -94,11 +95,12 @@ export default({
         const columns = ref([
             {
                 title: 'PVC',
-                dataIndex: 'name'
+                dataIndex: 'name',
+                width: 220
             },
             {
                 title: 'label',
-                dataIndex: 'labels'
+                dataIndex: 'labels',
             },
             {
                 title: 'status',
@@ -107,18 +109,22 @@ export default({
             {
                 title: 'storage',
                 dataIndex: 'storage',
+                width:150
             },
             {
                 title: 'AccessMode',
                 dataIndex: 'accessMode',
+                width:450
             },
             {
                 title: 'StorageClass',
                 dataIndex: 'storageclass',
+                width:100
             },
             {
                 title: '创建时间',
-                dataIndex: 'creationTimestamp'
+                dataIndex: 'creationTimestamp',
+                width:125
             },
             {
                 title: 'action',
