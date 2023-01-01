@@ -150,11 +150,12 @@ export default ({
             appLoading.value = true
             httpClient.get(clusterListData.url)
             .then(res => {
-                //响应成功，获取deployment列表和total
+                //响应成功，获取cluster列表和total
                 clusterList.value = res.data
                 localStorage.setItem('cluster_num', clusterList.value.length)
                 if (!selectedKeys1.value.length) {
                     selectedKeys1.value[0] = clusterList.value[0]
+                    //setItem
                     localStorage.setItem('k8s_cluster', clusterList.value[0])
                 }
             })

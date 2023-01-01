@@ -28,6 +28,7 @@ export default {
     k8sPodDel: baseHost + '/api/v1/k8s/pod/delete',
     k8sPodContainer: baseHost + '/api/v1/k8s/pod/containers',
     k8sPodLog: baseHost + '/api/v1/k8s/pod/log',
+    k8sPodCreate: baseHost + '/api/v1/k8s/pod/create',
     k8sPodNumNp: baseHost + '/api/v1/k8s/pod/numns',
     //terminal
     k8sTerminalWs: 'ws://localhost:9091/ws',

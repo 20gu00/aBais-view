@@ -378,17 +378,18 @@ export default({
         })
         const createDeploymentData = reactive({
             url: common.k8sDeploymentCreate,
+            //与后端的json对应
             params: {
                 name: '',
                 namespace: '',
-                replicas: 1,
+                replicas: 1,  //int int32
                 image: '',
                 cpu: '',
                 memory: '',
-                health_check: false,
+                health_check: false,//bool
                 health_path: '',
-                label: {},
-                container_port: '',
+                label: {},  //map[string]string
+                container_port: '',  //int  下边http client解析
                 cluster: ''
             }
         })
@@ -621,7 +622,9 @@ export default({
             createDeploymentData.params.health_check = createDeployment.createHealthCheck
             createDeploymentData.params.health_path = createDeployment.createHealthPath
             createDeploymentData.params.container_port = parseInt(createDeployment.createContainerPort)
+            //vue中实现本地储存的方法：localStorage，在HTML5中，新加入了一个localStorage特性，这个特性主要是用来作为本地存储来使用的，解决了cookie存储空间不足的问题(cookie中每条cookie的存储空间为4k)，localStorage中一般浏览器支持的是5M大小，这个在不同的浏览器中localStorage会有所不同。
             createDeploymentData.params.cluster = localStorage.getItem('k8s_cluster')
+            //注意类型对应
             httpClient.post(createDeploymentData.url, createDeploymentData.params)
             .then(res => {
                 message.success(res.msg)

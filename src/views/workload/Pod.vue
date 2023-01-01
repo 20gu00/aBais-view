@@ -131,13 +131,13 @@
                     label="name"
                     name="createName"
                     :rules="[{ required: true, message: '请输入Pod名称' }]">
-                    <a-input v-model:value="createName" />
+                    <a-input style="color:khaki" v-model:value="createName" />
                 </a-form-item>
                 <a-form-item
                     label="namespace"
                     name="createNamespace"
-                    :rules="[{ required: true, message: '请选择namespace' }]">
-                    <a-select show-search style="width:140px;" v-model:value="createNamespace" placeholder="请选择">
+                    :rules="[{ required: false, message: '请选择namespace' }]">
+                    <a-select show-search style="width:140px;color:khaki" v-model:value="createNamespace" placeholder="请选择">
                         <a-select-option
                             v-for="(item, index) in namespaceList"
                             :key="index"
@@ -146,51 +146,80 @@
                         </a-select-option>
                     </a-select>
                 </a-form-item>
-                <a-form-item
+                <!-- <a-form-item
                     label="replicas"
                     name="createReplicas">
-                    <a-input-number v-model:value="createReplicas" :min="1" :max="50"></a-input-number>
+                    <a-input-number style="color:khaki" v-model:value="createReplicas" :min="1" :max="50"></a-input-number>
                     <a-popover>
                         <template #content>
                             <span style="color:aquamarine">副本数Min1，Max50</span>
                         </template>
                         <info-circle-outlined style="margin-left:10px;color:greenyellow" />
                     </a-popover>
-                </a-form-item>
+                </a-form-item> -->
                 <a-form-item
                     label="image"
                     name="createImage"
                     :rules="[{ required: true, message: '请输入image' }]">
-                    <a-input v-model:value="createImage" />
+                    <a-input style="color:khaki" v-model:value="createImage" />
+                    <a-popover>
+                        <template #content>
+                            <span style="color:aquamarine">多个镜像用","隔开,即一pod多容器场景</span>
+                        </template>
+                        <info-circle-outlined style="margin-left:10px;color:greenyellow" />
+                    </a-popover>
                 </a-form-item>
                 <a-form-item
                     label="label"
                     name="createLabelStr"
                     :rules="[{ required: true, message: '请输入label' }]">
-                    <a-input v-model:value="createLabelStr" placeholder="project=test,app=gateway" />
+                    <a-input style="color:khaki" v-model:value="createLabelStr" placeholder="project=test,app=gateway" />
                 </a-form-item>
                 <a-form-item
-                    label="resource"
-                    name="createResource"
-                    :rules="[{ required: true, message: '请选择资源规格' }]">
-                    <a-select show-search style="width:140px;" v-model:value="createResource" placeholder="请选择">
-                        <a-select-option value="0.5/0.2">0.5核/200M</a-select-option>
-                        <a-select-option value="1/0.2">0.5核/200M</a-select-option>
-                        <a-select-option value="0.5/0.5">0.5核/500M</a-select-option>
-                        <a-select-option value="1/0.5">1核/500M</a-select-option>
-                        <a-select-option value="0.5/1">0.5核/1G</a-select-option>
-                        <a-select-option value="1/1">1核/1G</a-select-option>
-                        <a-select-option value="1/2">1核/2G</a-select-option>
-                        <a-select-option value="2/4">2核/4G</a-select-option>
-                        <a-select-option value="4/8">4核/8G</a-select-option>
-                        <a-select-option value="8/16">8核/16G</a-select-option>
+                    label="request"
+                    name="createRequestResource"
+                    :rules="[{ required: false, message: '请选择request资源规格' }]">
+                    <a-select show-search style="width:140px;" v-model:value="createRequestResource" placeholder="请选择">
+                        <a-select-option style="color:aquamarine" value="0.5/0.2">0.5核/200M</a-select-option>
+                        <a-select-option style="color:aquamarine" value="1/0.2">1核/200M</a-select-option>
+                        <a-select-option style="color:aquamarine" value="0.5/0.5">0.5核/500M</a-select-option>
+                        <a-select-option style="color:aquamarine" value="1/0.5">1核/500M</a-select-option>
+                        <a-select-option style="color:aquamarine" value="0.5/1">0.5核/1G</a-select-option>
+                        <a-select-option style="color:aquamarine" value="1/1">1核/1G</a-select-option>
+                        <a-select-option style="color:aquamarine" value="1/2">1核/2G</a-select-option>
+                        <a-select-option style="color:aquamarine" value="2/4">2核/4G</a-select-option>
+                        <a-select-option style="color:aquamarine" value="4/8">4核/8G</a-select-option>
+                        <a-select-option style="color:aquamarine" value="8/16">8核/16G</a-select-option>
+                    </a-select>
+                </a-form-item>
+                <a-form-item
+                    label="limit"
+                    name="createLimitResource"
+                    :rules="[{ required: false, message: '请选择limit资源规格' }]">
+                    <a-select show-search style="width:140px;" v-model:value="createLimitResource" placeholder="请选择">
+                        <a-select-option style="color:aquamarine" value="0.5/0.2">0.5核/200M</a-select-option>
+                        <a-select-option style="color:aquamarine" value="1/0.2">1核/200M</a-select-option>
+                        <a-select-option style="color:aquamarine" value="0.5/0.5">0.5核/500M</a-select-option>
+                        <a-select-option style="color:aquamarine" value="1/0.5">1核/500M</a-select-option>
+                        <a-select-option style="color:aquamarine" value="0.5/1">0.5核/1G</a-select-option>
+                        <a-select-option style="color:aquamarine" value="1/1">1核/1G</a-select-option>
+                        <a-select-option style="color:aquamarine" value="1/2">1核/2G</a-select-option>
+                        <a-select-option style="color:aquamarine" value="2/4">2核/4G</a-select-option>
+                        <a-select-option style="color:aquamarine" value="4/8">4核/8G</a-select-option>
+                        <a-select-option style="color:aquamarine" value="8/16">8核/16G</a-select-option>
                     </a-select>
                 </a-form-item>
                 <a-form-item
                     label="container port"
                     name="createContainerPort"
                     :rules="[{ required: true, message: '请输入端口号' }]">
-                    <a-input v-model:value="createContainerPort" />
+                    <a-input style="color:khaki" v-model:value="createContainerPort" />
+                    <a-popover>
+                        <template #content>
+                            <span style="color:aquamarine">多个端口用","隔开,即一pod多容器场景(数目与image对应)</span>
+                        </template>
+                        <info-circle-outlined style="margin-left:10px;color:greenyellow" />
+                    </a-popover>
                 </a-form-item>
                 <a-form-item
                     label="health check"
@@ -202,7 +231,7 @@
                     label="检测路径"
                     name="createHealthPath"
                     :rules="[{ required: true, message: '请输入要进行健康检测的路径' }]">
-                    <a-input v-model:value="createHealthPath" />
+                    <a-input style="color:khaki" v-model:value="createHealthPath" />
                 </a-form-item>
             </a-form>
             <template #footer>
@@ -368,24 +397,27 @@ export default({
         const createDrawer = ref(false)
         const createPod = reactive({
             createName: '',
-            createNamespace: '',
+            createNamespace: 'default',  //默认值,占位符优先级低
             createReplicas: 1,
             createImage: '',
-            createResource: '',
+            createRequestResource: '',
+            createLimitResource: '',
             createHealthCheck: false,  //默认关闭探针
             createHealthPath: '',
             createLabelStr: '',
             createContainerPort: ''
         })
         const createPodData = reactive({
-            url: common.k8sDeploymentCreate,
+            url: common.k8sPodCreate,
             params: {
                 name: '',
                 namespace: '',
                 replicas: 1,
                 image: '',
-                cpu: '',
-                memory: '',
+                requestCpu:'',
+                requestMemory:'',
+                limitCpu:'',
+                limitMemory:'',
                 health_check: false,
                 health_path: '',
                 label: {},
@@ -619,7 +651,7 @@ export default({
             appLoading.value = true
             //定义label、cpu和memory变量
             let label = new Map()
-            let cpu, memory
+            let limitCpu, limitMemory,requestCpu,requestMemory
             //将label字符串转成数组
             let a = (createPod.createLabelStr).split(",")
             //将数组转成map
@@ -627,14 +659,20 @@ export default({
                 let b = item.split("=")
                 label[b[0]] = b[1]
             })
-            //将deployment的规格转成cpu和memory
-            let resourceList = createPod.createResource.split("/")
-            cpu = resourceList[0]
-            memory = resourceList[1] + "Gi"
+            //将pod的资源规格转成cpu和memory
+            let limitResourceList = createPod.createLimitResource.split("/")
+            limitCpu = limitResourceList[0]  //m 1.5 will be serialized as "1500m"  1 CPU =  1000 millicpu（1 Core = 1000m）
+            limitMemory = limitResourceList[1] + "Gi"
+
+            let requestResourceList = createPod.createRequestResource.split("/")
+            requestCpu = requestResourceList[0]
+            requestMemory = requestResourceList[1] + "Gi"
             //赋值
             createPodData.params.label = label
-            createPodData.params.cpu = cpu
-            createPodData.params.memory = memory
+            createPodData.params.requestCpu = requestCpu
+            createPodData.params.requestMemory = requestMemory
+            createPodData.params.limitCpu = limitCpu
+            createPodData.params.limitMemory = limitMemory
             createPodData.params.name = createPodData.createName
             createPodData.params.namespace = createPodData.createNamespace
             createPodData.params.replicas = createPodData.createReplicas
