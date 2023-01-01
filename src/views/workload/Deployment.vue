@@ -82,17 +82,17 @@
         <!-- 调整副本数的弹框 -->
         <a-modal
             v-model:visible="scaleModal"
-            title="副本数调整"
+            title="replicas调整"
             :confirm-loading="appLoading"
             cancelText="取消"
             okText="更新"
             @ok="scaleDeployment">
             <div style="text-align:center">
-                <span style="margin-right:30px;">实例数: </span>
+                <span style="margin-right:30px;">副本数: </span>
                 <a-input-number v-model:value="scaleNum" :min="0" :max="30" label="描述文字"></a-input-number>
                 <a-popover>
                     <template #content>
-                        <span>Deployment实例数最小0，最大30</span>
+                        <span>Deployment 副本数Min0，Max50</span>
                     </template>
                     <info-circle-outlined style="margin-left:10px;color:rgb(84, 138, 238);" />
                 </a-popover>
@@ -111,6 +111,8 @@
             -->
         <a-drawer
             v-model:visible="createDrawer"
+            style="color:blue;font-size:large"
+            width:5000
             title="创建Deployment"
             :footer-style="{ textAlign: 'right' }"
             @close="onClose">
@@ -141,16 +143,16 @@
                 -->
                 <!--每个表单项目-->
                 <a-form-item
-                    label="名称"
+                    label="name"
                     name="createName"
                     :rules="[{ required: true, message: '请输入Deployment名称' }]">
                     <!--输入框 v-model本质v-bind v-on 双向绑定-->
                     <a-input v-model:value="createName" />
                 </a-form-item>
                 <a-form-item
-                    label="命名空间"
+                    label="namespace"
                     name="createNamespace"
-                    :rules="[{ required: true, message: '请选择命名空间' }]">
+                    :rules="[{ required: true, message: '请选择namespace' }]">
                     <!--下拉选择框 placeholder占位符-->
                     <a-select show-search style="width:140px;" v-model:value="createNamespace" placeholder="请选择">
                         <!--可选项 遍历-->
@@ -163,38 +165,43 @@
                     </a-select>
                 </a-form-item>
                 <a-form-item
-                    label="副本数"
+                    label="replicas"
                     name="createReplicas">
                     <!--数字输入 最大最小的限制-->
-                    <a-input-number v-model:value="createReplicas" :min="1" :max="30"></a-input-number>
+                    <a-input-number v-model:value="createReplicas" :min="1" :max="50"></a-input-number>
                     <!--提示-->
                     <a-popover>
                         <template #content>
-                            <span>Deployment副本数最小1，最大30</span>
+                            <span style="color:aquamarine">副本数Min1，Max50</span>
                         </template>
                         <!--信息圈概述  提示-->
-                        <info-circle-outlined style="margin-left:10px;color:rgb(84, 138, 238);" />
+                        <info-circle-outlined style="margin-left:10px;color:greenyellow" />
                     </a-popover>
                 </a-form-item>
                 <a-form-item
-                    label="镜像"
+                    label="image"
                     name="createImage"
-                    :rules="[{ required: true, message: '请输入镜像名' }]">
+                    :rules="[{ required: true, message: '请输入image' }]">
                     <a-input v-model:value="createImage" />
                 </a-form-item>
                 <a-form-item
-                    label="标签"
+                    label="label"
                     name="createLabelStr"
-                    :rules="[{ required: true, message: '请输入标签' }]">
+                    :rules="[{ required: true, message: '请输入label' }]">
                     <!--占位符 案例-->
-                    <a-input v-model:value="createLabelStr" placeholder="project=ms,app=gateway" />
+                    <a-input v-model:value="createLabelStr" placeholder="project=test,app=gateway" />
                 </a-form-item>
                 <a-form-item
-                    label="资源配额"
+                    label="resource"
                     name="createResource"
                     :rules="[{ required: true, message: '请选择资源规格' }]">
                     <a-select show-search style="width:140px;" v-model:value="createResource" placeholder="请选择">
+                        <a-select-option value="0.5/0.2">0.5核/200M</a-select-option>
+                        <a-select-option value="1/0.2">0.5核/200M</a-select-option>
+                        <a-select-option value="0.5/0.5">0.5核/500M</a-select-option>
+                        <a-select-option value="1/0.5">1核/500M</a-select-option>
                         <a-select-option value="0.5/1">0.5核/1G</a-select-option>
+                        <a-select-option value="1/1">1核/1G</a-select-option>
                         <a-select-option value="1/2">1核/2G</a-select-option>
                         <a-select-option value="2/4">2核/4G</a-select-option>
                         <a-select-option value="4/8">4核/8G</a-select-option>
@@ -202,13 +209,13 @@
                     </a-select>
                 </a-form-item>
                 <a-form-item
-                    label="容器端口"
+                    label="container port"
                     name="createContainerPort"
                     :rules="[{ required: true, message: '请输入端口号' }]">
                     <a-input v-model:value="createContainerPort" />
                 </a-form-item>
                 <a-form-item
-                    label="健康检查"
+                    label="health check"
                     name="createHealthCheck">
                     <a-switch v-model:checked="createHealthCheck" />
                 </a-form-item>
@@ -217,14 +224,14 @@
                     v-if="createHealthCheck"
                     label="检测路径"
                     name="createHealthPath"
-                    :rules="[{ required: true, message: '请输入健康检测路径' }]">
+                    :rules="[{ required: true, message: '请输入要进行健康检测的路径' }]">
                     <a-input v-model:value="createHealthPath" />
                 </a-form-item>
             </a-form>
             <!--抽屉底部-->
             <template #footer>
                 <a-button style="margin-right: 8px" @click="onClose()">取消</a-button>
-                <a-button type="primary" @click="formSubmit()">创建</a-button>
+                <a-button type="primary" @click="formSubmit()">确定</a-button>
             </template>
         </a-drawer>
     </div>
@@ -286,7 +293,7 @@ export default({
             total: 0,
             currentPage: 1,
             pagesize: 10,
-            pageSizeOptions: ["10", "20", "50", "100"],
+            pageSizeOptions: ["10", "20", "50", "100","200","500","1000"],
             showTotal: total => `共 ${total} 条`
         })
         //列表
@@ -633,7 +640,7 @@ export default({
         //关闭抽屉
         function onClose () {
             Modal.confirm({
-                title: "是否确认关闭操作? ",
+                title: "是否确认关闭? ",
                 icon: createVNode(ExclamationCircleOutlined),
                 content: createVNode('div', {
                     //style: 'color:red;',

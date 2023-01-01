@@ -27,7 +27,7 @@
                                 <template #content>
                                     <span>{{ key + ":" +val }}</span>
                                 </template>
-                                <a-tag style="width:190px;margin-bottom:5px;cursor:pointer;font-size:medium" color="blue">{{ ellipsis(key + ":" +val, 20) }}</a-tag>
+                                <a-tag style="margin-bottom:5px;cursor:pointer;font-size:medium" color="blue">{{ ellipsis(key + ":" +val, 20) }}</a-tag>
                             </a-popover>
                         </div>
                     </template>
@@ -484,7 +484,7 @@ export default({
         //关闭抽屉
         function onClose () {
             Modal.confirm({
-                title: "是否确认关闭操作? ",
+                title: "是否确认关闭? ",
                 icon: createVNode(ExclamationCircleOutlined),
                 content: createVNode('div', {
                     //style: 'color:red;',

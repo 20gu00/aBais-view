@@ -93,19 +93,19 @@ export default({
         //表结构
         const columns = ref([
             {
-                title: 'StatefulSet名',
+                title: 'StatefulSet',
                 dataIndex: 'name'
             },
             {
-                title: '标签',
+                title: 'label',
                 dataIndex: 'labels'
             },
             {
-                title: '容器组',
+                title: 'pod组',
                 dataIndex: 'containers',
             },
             {
-                title: '镜像',
+                title: 'image',
                 dataIndex: 'image'
             },
             {
@@ -113,7 +113,7 @@ export default({
                 dataIndex: 'creationTimestamp'
             },
             {
-                title: '操作',
+                title: 'action',
                 key: 'action',
                 fixed: 'right',
                 width: 200
