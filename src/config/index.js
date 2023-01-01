@@ -47,7 +47,7 @@ export default {
     k8sDaemonSetList: baseHost + '/api/v1/k8s/daemonsets',
     k8sDaemonSetDetail: baseHost + '/api/v1/k8s/daemonset/detail',
     k8sDaemonSetUpdate: baseHost + '/api/v1/k8s/daemonset/update',
-    k8sDaemonSetDel: baseHost + '/api/k8s/v1/daemonset/delete',
+    k8sDaemonSetDel: baseHost + '/api/v1/k8s/daemonset/delete',
     //statefulset
     k8sStatefulSetList: baseHost + '/api/v1/k8s/statefulsets',
     k8sStatefulSetDetail: baseHost + '/api/v1/k8s/statefulset/detail',

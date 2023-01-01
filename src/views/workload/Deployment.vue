@@ -154,7 +154,7 @@
                     name="createNamespace"
                     :rules="[{ required: true, message: '请选择namespace' }]">
                     <!--下拉选择框 placeholder占位符-->
-                    <a-select show-search style="width:140px;" v-model:value="createNamespace" placeholder="请选择">
+                    <a-select show-search  v-model:value="createNamespace" placeholder="请选择">
                         <!--可选项 遍历-->
                         <a-select-option
                             v-for="(item, index) in namespaceList"

@@ -137,7 +137,7 @@ export default({
             total: 0,
             currentPage: 1,
             pagesize: 10,
-            pageSizeOptions: ["10", "20", "50", "100"],
+            pageSizeOptions: ["10", "20", "50", "100","200","500","1000"],
             showTotal: total => `共 ${total} 条`
         })
         //列表

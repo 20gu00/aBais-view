@@ -6,7 +6,10 @@
             @searchChange="getSearchValue"
             namespace
             @namespaceChange="getNamespaceValue"
-            @dataList="getPodList"/>
+            @namespaceList="getNamespaceList"
+            @dataList="getPodList"
+            add
+            @addFunc="handleAdd"/>
         <!--card 通用卡片容器，可承载文字、列表、图片、段落-->
         <!--bodyStyle 内容区域自定义样式 css padding上下左右内边距-->
         <a-card :bodyStyle="{padding: '10px'}">
@@ -115,12 +118,104 @@
                 @change="onChange"
             ></codemirror>
         </a-modal>
+        <a-drawer
+            v-model:visible="createDrawer"
+            style="color:blue;font-size:large"
+            width:5000
+            title="创建Pod"
+            :footer-style="{ textAlign: 'right' }"
+            @close="onClose">
+            <br>
+            <a-form ref="formRef" :model="createPod" :labelCol="{style: {width: '30%'}}">
+                <a-form-item
+                    label="name"
+                    name="createName"
+                    :rules="[{ required: true, message: '请输入Pod名称' }]">
+                    <a-input v-model:value="createName" />
+                </a-form-item>
+                <a-form-item
+                    label="namespace"
+                    name="createNamespace"
+                    :rules="[{ required: true, message: '请选择namespace' }]">
+                    <a-select show-search style="width:140px;" v-model:value="createNamespace" placeholder="请选择">
+                        <a-select-option
+                            v-for="(item, index) in namespaceList"
+                            :key="index"
+                            :value="item.metadata.name">
+                            {{ item.metadata.name }}
+                        </a-select-option>
+                    </a-select>
+                </a-form-item>
+                <a-form-item
+                    label="replicas"
+                    name="createReplicas">
+                    <a-input-number v-model:value="createReplicas" :min="1" :max="50"></a-input-number>
+                    <a-popover>
+                        <template #content>
+                            <span style="color:aquamarine">副本数Min1，Max50</span>
+                        </template>
+                        <info-circle-outlined style="margin-left:10px;color:greenyellow" />
+                    </a-popover>
+                </a-form-item>
+                <a-form-item
+                    label="image"
+                    name="createImage"
+                    :rules="[{ required: true, message: '请输入image' }]">
+                    <a-input v-model:value="createImage" />
+                </a-form-item>
+                <a-form-item
+                    label="label"
+                    name="createLabelStr"
+                    :rules="[{ required: true, message: '请输入label' }]">
+                    <a-input v-model:value="createLabelStr" placeholder="project=test,app=gateway" />
+                </a-form-item>
+                <a-form-item
+                    label="resource"
+                    name="createResource"
+                    :rules="[{ required: true, message: '请选择资源规格' }]">
+                    <a-select show-search style="width:140px;" v-model:value="createResource" placeholder="请选择">
+                        <a-select-option value="0.5/0.2">0.5核/200M</a-select-option>
+                        <a-select-option value="1/0.2">0.5核/200M</a-select-option>
+                        <a-select-option value="0.5/0.5">0.5核/500M</a-select-option>
+                        <a-select-option value="1/0.5">1核/500M</a-select-option>
+                        <a-select-option value="0.5/1">0.5核/1G</a-select-option>
+                        <a-select-option value="1/1">1核/1G</a-select-option>
+                        <a-select-option value="1/2">1核/2G</a-select-option>
+                        <a-select-option value="2/4">2核/4G</a-select-option>
+                        <a-select-option value="4/8">4核/8G</a-select-option>
+                        <a-select-option value="8/16">8核/16G</a-select-option>
+                    </a-select>
+                </a-form-item>
+                <a-form-item
+                    label="container port"
+                    name="createContainerPort"
+                    :rules="[{ required: true, message: '请输入端口号' }]">
+                    <a-input v-model:value="createContainerPort" />
+                </a-form-item>
+                <a-form-item
+                    label="health check"
+                    name="createHealthCheck">
+                    <a-switch v-model:checked="createHealthCheck" />
+                </a-form-item>
+                <a-form-item
+                    v-if="createHealthCheck"
+                    label="检测路径"
+                    name="createHealthPath"
+                    :rules="[{ required: true, message: '请输入要进行健康检测的路径' }]">
+                    <a-input v-model:value="createHealthPath" />
+                </a-form-item>
+            </a-form>
+            <template #footer>
+                <a-button style="margin-right: 8px" @click="onClose()">取消</a-button>
+                <a-button type="primary" @click="formSubmit()">确定</a-button>
+            </template>
+        </a-drawer>
     </div>
 </template>
 <!--标准的 JavaScript 模块。它应该导出一个 Vue 组件定义作为其默认导出。-->
 <script>
 //vue方法
-import { createVNode, reactive, ref } from 'vue';
+import { createVNode, reactive, ref,toRefs } from 'vue';
 //使用vue0router官方的路由管理器,useRouter方便获取路由信息
 import { useRouter } from 'vue-router'
 //src 子组件
@@ -197,7 +292,7 @@ export default({
         //ref的底层原理同reactive一样，都是Proxy
         //reactive的参数一般是对象或者数组,他能够将复杂数据类型变为响应式数据。
         //reactive的响应式是深层次的，底层本质是将传入的数据转换为Proxy对象
-
+        const namespaceList = ref([])
         //分页
         const pagination = reactive({
             showSizeChanger: true,
@@ -267,6 +362,37 @@ export default({
         //容器
         //日志
 
+
+        //创建
+        const formRef = ref()
+        const createDrawer = ref(false)
+        const createPod = reactive({
+            createName: '',
+            createNamespace: '',
+            createReplicas: 1,
+            createImage: '',
+            createResource: '',
+            createHealthCheck: false,  //默认关闭探针
+            createHealthPath: '',
+            createLabelStr: '',
+            createContainerPort: ''
+        })
+        const createPodData = reactive({
+            url: common.k8sDeploymentCreate,
+            params: {
+                name: '',
+                namespace: '',
+                replicas: 1,
+                image: '',
+                cpu: '',
+                memory: '',
+                health_check: false,
+                health_path: '',
+                label: {},
+                container_port: '',
+                cluster: ''
+            }
+        })
         //【方法】
         //json转yaml方法
         function transYaml(content) {
@@ -363,6 +489,9 @@ export default({
             .finally(() => {
                 appLoading.value = false
             })
+        }
+        function getNamespaceList(val) {
+            namespaceList.value = val
         }
         //编辑器内容变化时触发的方式,用于将更新的内容复制到变量中
         function onChange(val) {
@@ -461,6 +590,93 @@ export default({
         function readyToTrue(){
             allContainerReady.value=true
         }
+         //处理新增
+         function handleAdd() {
+            createDrawer.value = true
+        }
+        //验证表单
+        async function formSubmit() {
+            try {
+                await formRef.value.validateFields();
+                //console.log('Success:', values);
+                createPodFunc()
+            } catch (errorInfo) {
+                console.log('Failed:', errorInfo);
+            }
+        }
+        function resetForm() {
+            formRef.value.resetFields();
+        }
+        //创建deployment
+        function createPodFunc() {
+            //正则匹配，验证label的合法性
+            let reg = new RegExp("(^[A-Za-z]+=[A-Za-z0-9]+).*")
+            if (!reg.test(createPod.createLabelStr)) {
+                message.warning("标签填写异常，请确认后重新填写")
+                return
+            }
+            //加载loading动画
+            appLoading.value = true
+            //定义label、cpu和memory变量
+            let label = new Map()
+            let cpu, memory
+            //将label字符串转成数组
+            let a = (createPod.createLabelStr).split(",")
+            //将数组转成map
+            a.forEach(item => {
+                let b = item.split("=")
+                label[b[0]] = b[1]
+            })
+            //将deployment的规格转成cpu和memory
+            let resourceList = createPod.createResource.split("/")
+            cpu = resourceList[0]
+            memory = resourceList[1] + "Gi"
+            //赋值
+            createPodData.params.label = label
+            createPodData.params.cpu = cpu
+            createPodData.params.memory = memory
+            createPodData.params.name = createPodData.createName
+            createPodData.params.namespace = createPodData.createNamespace
+            createPodData.params.replicas = createPodData.createReplicas
+            createPodData.params.image = createPodData.createImage
+            createPodData.params.health_check = createPodData.createHealthCheck
+            createPodData.params.health_path = createPodData.createHealthPath
+            createPodData.params.container_port = parseInt(createPodData.createContainerPort)
+            createPodData.params.cluster = localStorage.getItem('k8s_cluster')
+            httpClient.post(createPodData.url, createPodData.params)
+            .then(res => {
+                message.success(res.msg)
+            })
+            .catch(res => {
+                message.error(res.msg)
+            })
+            .finally(() => {
+                //重置表单
+                resetForm()
+                getPodList()
+                //关闭抽屉
+                createDrawer.value = false
+            })
+        }
+        //关闭抽屉
+        function onClose () {
+            Modal.confirm({
+                title: "是否确认关闭? ",
+                icon: createVNode(ExclamationCircleOutlined),
+                content: createVNode('div', {
+                    //style: 'color:red;',
+                }),
+                cancelText: '取消',
+                okText: '确认',
+                onOk() {
+                    createDrawer.value = false
+                    resetForm()  //重置表单
+                },
+                onCancel() {
+                    createDrawer.value = true
+                }
+            })
+        }
         //return出去才能使用
         return {
             appLoading,
@@ -472,6 +688,10 @@ export default({
             yamlModal,
             cmOptions,
             allContainerReady,
+            createDrawer,
+            createPod,
+            namespaceList,
+            formRef,
             timeTrans,
             ellipsis,
             restartTotal,
@@ -487,7 +707,12 @@ export default({
             gotoLog,
             showConfirm,
             readyToFalse,
-            readyToTrue
+            readyToTrue,
+            handleAdd,
+            onClose,
+            formSubmit,
+            ...toRefs(createPod),
+            getNamespaceList
         }
     },
 })
