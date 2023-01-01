@@ -176,6 +176,44 @@
                     <a-input style="color:khaki" v-model:value="createLabelStr" placeholder="project=test,app=gateway" />
                 </a-form-item>
                 <a-form-item
+                    label="limit_cpu"
+                    name="limit资源"
+                    :rules="[{ required: false, message: '请输入limit资源' }]">
+                    <a-input style="color:khaki" v-model:value="createLimitCpu" placeholder="like 0.5 or 1 or2" />
+                    <a-input style="color:khaki" v-model:value="createLimitMemory" placeholder="like 100Mi or 1Gi" />
+                    <a-popover>
+                        <template #content>
+                            <span style="color:aquamarine">有先后顺序,对应image数目以image为参考,多了无意义</span>
+                        </template>
+                        <info-circle-outlined style="margin-left:10px;color:greenyellow" />
+                    </a-popover>
+                </a-form-item>
+                <a-form-item
+                    label="request_cpu"
+                    name="request资源"
+                    :rules="[{ required: false, message: '请输入request资源' }]">
+                    <a-input style="color:khaki" v-model:value="createRequestCpu" placeholder="like 0.5 or 1 or2" />
+                    <a-input style="color:khaki" v-model:value="createRequestMemory" placeholder="like 100Mi or 1Gi" />
+                    <a-popover>
+                        <template #content>
+                            <span style="color:aquamarine">有先后顺序,对应image,数目以image为参考,多了无意义</span>
+                        </template>
+                        <info-circle-outlined style="margin-left:10px;color:greenyellow" />
+                    </a-popover>
+                </a-form-item>
+                <a-form-item
+                    label="container port"
+                    name="createContainerPort"
+                    :rules="[{ required: true, message: '请输入端口号' }]">
+                    <a-input style="color:khaki" v-model:value="createContainerPort" />
+                    <a-popover>
+                        <template #content>
+                            <span style="color:aquamarine">多个端口用","隔开,即一pod多容器场景(数目与image对应,容器和端口一对一)</span>
+                        </template>
+                        <info-circle-outlined style="margin-left:10px;color:greenyellow" />
+                    </a-popover>
+                </a-form-item>
+                <!-- <a-form-item
                     label="request"
                     name="createRequestResource"
                     :rules="[{ required: false, message: '请选择request资源规格' }]">
@@ -208,19 +246,7 @@
                         <a-select-option style="color:aquamarine" value="4/8">4核/8G</a-select-option>
                         <a-select-option style="color:aquamarine" value="8/16">8核/16G</a-select-option>
                     </a-select>
-                </a-form-item>
-                <a-form-item
-                    label="container port"
-                    name="createContainerPort"
-                    :rules="[{ required: true, message: '请输入端口号' }]">
-                    <a-input style="color:khaki" v-model:value="createContainerPort" />
-                    <a-popover>
-                        <template #content>
-                            <span style="color:aquamarine">多个端口用","隔开,即一pod多容器场景(数目与image对应)</span>
-                        </template>
-                        <info-circle-outlined style="margin-left:10px;color:greenyellow" />
-                    </a-popover>
-                </a-form-item>
+                </a-form-item> -->
                 <a-form-item
                     label="health check"
                     name="createHealthCheck">
@@ -398,10 +424,15 @@ export default({
         const createPod = reactive({
             createName: '',
             createNamespace: 'default',  //默认值,占位符优先级低
-            createReplicas: 1,
+            //createReplicas: 1,  //默认1
             createImage: '',
-            createRequestResource: '',
-            createLimitResource: '',
+            // createRequestResource: '',
+            // createLimitResource: '',
+            //建议不设置默认值,由k8s自己控制,虽然不舍值资源限制有一定风险,但实际经验如果不是生产环境,不设置会更省心
+            createLimitCpu:'',
+            createLimitMemory:'',
+            createRequestCpu:'1',
+            createRequestMemory:'1Gi',
             createHealthCheck: false,  //默认关闭探针
             createHealthPath: '',
             createLabelStr: '',
@@ -409,15 +440,16 @@ export default({
         })
         const createPodData = reactive({
             url: common.k8sPodCreate,
+            //参数能否传参为空即不设置,要看后端json设置是否允许为空(不是omitempty就行的),不然容易报错正则表达式错误
             params: {
                 name: '',
                 namespace: '',
-                replicas: 1,
+                // replicas: 1,
                 image: '',
-                requestCpu:'',
-                requestMemory:'',
-                limitCpu:'',
-                limitMemory:'',
+                request_cpu:'',
+                request_memory:'',
+                limit_cpu:'',
+                limit_memory:'',
                 health_check: false,
                 health_path: '',
                 label: {},
@@ -496,7 +528,7 @@ export default({
             .catch(res => {
                 message.error(res.msg)
             })
-            //最大程度避免影响主数据呈现问题
+            //最大程度避免影响主数据呈现问题,不要一直加载
             .finally(() => {
                 appLoading.value = false
             })
@@ -651,7 +683,7 @@ export default({
             appLoading.value = true
             //定义label、cpu和memory变量
             let label = new Map()
-            let limitCpu, limitMemory,requestCpu,requestMemory
+            // let limitCpu, limitMemory,requestCpu,requestMemory
             //将label字符串转成数组
             let a = (createPod.createLabelStr).split(",")
             //将数组转成map
@@ -660,26 +692,25 @@ export default({
                 label[b[0]] = b[1]
             })
             //将pod的资源规格转成cpu和memory
-            let limitResourceList = createPod.createLimitResource.split("/")
-            limitCpu = limitResourceList[0]  //m 1.5 will be serialized as "1500m"  1 CPU =  1000 millicpu（1 Core = 1000m）
-            limitMemory = limitResourceList[1] + "Gi"
+            // let limitResourceList = createPod.createLimitResource.split("/")
+            // limitCpu = limitResourceList[0]  //m 1.5 will be serialized as "1500m"  1 CPU =  1000 millicpu（1 Core = 1000m）
+            // limitMemory = limitResourceList[1] + "Gi"
 
-            let requestResourceList = createPod.createRequestResource.split("/")
-            requestCpu = requestResourceList[0]
-            requestMemory = requestResourceList[1] + "Gi"
+            // let requestResourceList = createPod.createRequestResource.split("/")
+            // requestCpu = requestResourceList[0]
+            // requestMemory = requestResourceList[1] + "Gi"
             //赋值
             createPodData.params.label = label
-            createPodData.params.requestCpu = requestCpu
-            createPodData.params.requestMemory = requestMemory
-            createPodData.params.limitCpu = limitCpu
-            createPodData.params.limitMemory = limitMemory
-            createPodData.params.name = createPodData.createName
-            createPodData.params.namespace = createPodData.createNamespace
-            createPodData.params.replicas = createPodData.createReplicas
-            createPodData.params.image = createPodData.createImage
-            createPodData.params.health_check = createPodData.createHealthCheck
-            createPodData.params.health_path = createPodData.createHealthPath
-            createPodData.params.container_port = parseInt(createPodData.createContainerPort)
+            createPodData.params.request_cpu = createPod.createRequestCpu
+            createPodData.params.request_memory = createPod.createRequestMemory
+            createPodData.params.limit_cpu = createPod.createLimitCpu
+            createPodData.params.limit_memory = createPod.createLimitMemory
+            createPodData.params.name = createPod.createName
+            createPodData.params.namespace = createPod.createNamespace
+            createPodData.params.image = createPod.createImage
+            createPodData.params.health_check = createPod.createHealthCheck
+            createPodData.params.health_path = createPod.createHealthPath
+            createPodData.params.container_port = createPod.createContainerPort
             createPodData.params.cluster = localStorage.getItem('k8s_cluster')
             httpClient.post(createPodData.url, createPodData.params)
             .then(res => {
