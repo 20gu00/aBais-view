@@ -122,7 +122,7 @@
         <a-drawer
             v-model:visible="createDrawer"
             style="color:blue;font-size:large"
-            width:5000
+            width="800px"
             title="创建Pod"
             :footer-style="{ textAlign: 'right' }"
             @close="onClose">
@@ -173,31 +173,31 @@
                 <a-form-item
                     label="label"
                     name="createLabelStr"
-                    :rules="[{ required: true, message: '请输入label' }]">
+                    :rules="[{ required: false, message: '请输入label' }]">
                     <a-input style="color:khaki" v-model:value="createLabelStr" placeholder="project=test,app=gateway" />
                 </a-form-item>
                 <a-form-item
-                    label="limit_cpu"
+                    label="limit"
                     name="limit资源"
                     :rules="[{ required: false, message: '请输入limit资源' }]">
                     <a-input style="color:khaki" v-model:value="createLimitCpu" placeholder="like 0.5 or 1 or2" />
                     <a-input style="color:khaki" v-model:value="createLimitMemory" placeholder="like 100Mi or 1Gi" />
                     <a-popover>
                         <template #content>
-                            <span style="color:aquamarine">有先后顺序,对应image数目以image为参考,多了无意义</span>
+                            <span style="color:aquamarine">有先后顺序,对应image数目以image为参考,多了无意义,多个用","隔开</span>
                         </template>
                         <info-circle-outlined style="margin-left:10px;color:greenyellow" />
                     </a-popover>
                 </a-form-item>
                 <a-form-item
-                    label="request_cpu"
+                    label="request"
                     name="request资源"
                     :rules="[{ required: false, message: '请输入request资源' }]">
                     <a-input style="color:khaki" v-model:value="createRequestCpu" placeholder="like 0.5 or 1 or2" />
                     <a-input style="color:khaki" v-model:value="createRequestMemory" placeholder="like 100Mi or 1Gi" />
                     <a-popover>
                         <template #content>
-                            <span style="color:aquamarine">有先后顺序,对应image,数目以image为参考,多了无意义</span>
+                            <span style="color:aquamarine">有先后顺序,对应image,数目以image为参考,多了无意义,多了无意义,多个用","隔开</span>
                         </template>
                         <info-circle-outlined style="margin-left:10px;color:greenyellow" />
                     </a-popover>
@@ -209,7 +209,7 @@
                     <a-input style="color:khaki" v-model:value="createContainerPort" />
                     <a-popover>
                         <template #content>
-                            <span style="color:aquamarine">多个端口用","隔开,即一pod多容器场景(数目与image对应,容器和端口一对一)</span>
+                            <span style="color:aquamarine">多个端口用","隔开,即一pod多容器场景(数目与image对应)</span>
                         </template>
                         <info-circle-outlined style="margin-left:10px;color:greenyellow" />
                     </a-popover>
@@ -676,7 +676,7 @@ export default({
         function createPodFunc() {
             //正则匹配，验证label的合法性
             let reg = new RegExp("(^[A-Za-z]+=[A-Za-z0-9]+).*")
-            if (!reg.test(createPod.createLabelStr)) {
+            if (!reg.test(createPod.createLabelStr)&&createPod.createLabelStr!=='') {
                 message.warning("标签填写异常，请确认后重新填写")
                 return
             }

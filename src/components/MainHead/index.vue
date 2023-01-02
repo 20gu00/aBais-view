@@ -4,7 +4,7 @@
             <a-row>
                 <a-col :span="20">
                     <div style="text-align:left;">
-                        <span v-if="namespace" style="font-size:14px;">命名空间: </span>
+                        <span v-if="namespace" style="font-size:19px;color:aquamarine">ns: </span>
                         <a-select v-if="namespace" @change="nsChange" show-search style="width:140px;margin-right:20px;" size="small" v-model:value="namespaceValue" placeholder="请选择">
                             <a-select-option
                                 v-for="(item, index) in namespaceList"
@@ -25,7 +25,7 @@
                     <div style="text-align:right;">
                         <a-button v-if="add" style="margin-right:10px;" size="small" type="primary" ghost @click="$emit('addFunc')">
                             <template #icon><PlusOutlined /></template>
-                            新增
+                            Add
                         </a-button>
                         <a-button size="small" @click="$emit('dataList')">
                             <template #icon><UndoOutlined /></template>

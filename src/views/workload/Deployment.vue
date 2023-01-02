@@ -112,9 +112,8 @@
             -->
         <a-drawer
             v-model:visible="createDrawer"
-            style="color:blue;font-size:large"
-            width:5000
             title="创建Deployment"
+            width="800px"
             :footer-style="{ textAlign: 'right' }"
             @close="onClose">
             <br>
@@ -148,14 +147,14 @@
                     name="createName"
                     :rules="[{ required: true, message: '请输入Deployment名称' }]">
                     <!--输入框 v-model本质v-bind v-on 双向绑定-->
-                    <a-input v-model:value="createName" />
+                    <a-input style="color:khaki" v-model:value="createName" />
                 </a-form-item>
                 <a-form-item
                     label="namespace"
                     name="createNamespace"
                     :rules="[{ required: true, message: '请选择namespace' }]">
                     <!--下拉选择框 placeholder占位符-->
-                    <a-select show-search  v-model:value="createNamespace" placeholder="请选择">
+                    <a-select show-search  style="width:140px;color:khaki" v-model:value="createNamespace" placeholder="请选择">
                         <!--可选项 遍历-->
                         <a-select-option
                             v-for="(item, index) in namespaceList"
@@ -169,13 +168,14 @@
                     label="replicas"
                     name="createReplicas">
                     <!--数字输入 最大最小的限制-->
-                    <a-input-number v-model:value="createReplicas" :min="1" :max="50"></a-input-number>
+                    <a-input-number style="color:khaki" v-model:value="createReplicas" :min="1" :max="50"></a-input-number>
                     <!--提示-->
                     <a-popover>
                         <template #content>
                             <span style="color:aquamarine">副本数Min1，Max50</span>
                         </template>
                         <!--信息圈概述  提示-->
+                        <br>
                         <info-circle-outlined style="margin-left:10px;color:greenyellow" />
                     </a-popover>
                 </a-form-item>
@@ -183,16 +183,29 @@
                     label="image"
                     name="createImage"
                     :rules="[{ required: true, message: '请输入image' }]">
-                    <a-input v-model:value="createImage" />
+                    <a-input style="color:khaki" v-model:value="createImage" />
+                    <a-popover>
+                        <template #content>
+                            <span style="color:aquamarine">多个镜像用","隔开,即一pod多容器场景</span>
+                        </template>
+                        <info-circle-outlined style="margin-left:10px;color:greenyellow" />
+                    </a-popover>
                 </a-form-item>
                 <a-form-item
                     label="label"
                     name="createLabelStr"
-                    :rules="[{ required: true, message: '请输入label' }]">
+                    :rules="[{ required: false, message: '请输入label' }]">
                     <!--占位符 案例-->
-                    <a-input v-model:value="createLabelStr" placeholder="project=test,app=gateway" />
+                    <a-input style="color:khaki" v-model:value="createLabelStr" placeholder="project=test,app=gateway" />
                 </a-form-item>
                 <a-form-item
+                    label="pod label"
+                    name="createPodLabel"
+                    :rules="[{ required: true, message: '请输入pod label' }]">
+                    <!--占位符 案例-->
+                    <a-input style="color:khaki" v-model:value="createPodLabel" placeholder="project=test,app=gateway" />
+                </a-form-item>
+                <!-- <a-form-item
                     label="resource"
                     name="createResource"
                     :rules="[{ required: true, message: '请选择资源规格' }]">
@@ -208,12 +221,44 @@
                         <a-select-option value="4/8">4核/8G</a-select-option>
                         <a-select-option value="8/16">8核/16G</a-select-option>
                     </a-select>
+                </a-form-item> -->
+                <a-form-item
+                    label="limit"
+                    name="limit资源"
+                    :rules="[{ required: false, message: '请输入limit资源' }]">
+                    <a-input style="color:khaki" v-model:value="createLimitCpu" placeholder="like 0.5 or 1 or2" />
+                    <a-input style="color:khaki" v-model:value="createLimitMemory" placeholder="like 100Mi or 1Gi" />
+                    <a-popover>
+                        <template #content>
+                            <span style="color:aquamarine">有先后顺序,对应image数目以image为参考,多了无意义,多了无意义,多个用","隔开</span>
+                        </template>
+                        <info-circle-outlined style="margin-left:10px;color:greenyellow" />
+                    </a-popover>
+                </a-form-item>
+                <a-form-item
+                    label="request"
+                    name="request资源"
+                    :rules="[{ required: false, message: '请输入request资源' }]">
+                    <a-input style="color:khaki" v-model:value="createRequestCpu" placeholder="like 0.5 or 1 or2" />
+                    <a-input style="color:khaki" v-model:value="createRequestMemory" placeholder="like 100Mi or 1Gi" />
+                    <a-popover>
+                        <template #content>
+                            <span style="color:aquamarine">有先后顺序,对应image,数目以image为参考,多了无意义,多了无意义,多个用","隔开</span>
+                        </template>
+                        <info-circle-outlined style="margin-left:10px;color:greenyellow" />
+                    </a-popover>
                 </a-form-item>
                 <a-form-item
                     label="container port"
                     name="createContainerPort"
                     :rules="[{ required: true, message: '请输入端口号' }]">
-                    <a-input v-model:value="createContainerPort" />
+                    <a-input style="color:khaki" v-model:value="createContainerPort" />
+                    <a-popover>
+                        <template #content>
+                            <span style="color:aquamarine">多个端口用","隔开,即一pod多容器场景(数目与image对应)</span>
+                        </template>
+                        <info-circle-outlined style="margin-left:10px;color:greenyellow" />
+                    </a-popover>
                 </a-form-item>
                 <a-form-item
                     label="health check"
@@ -226,7 +271,7 @@
                     label="检测路径"
                     name="createHealthPath"
                     :rules="[{ required: true, message: '请输入要进行健康检测的路径' }]">
-                    <a-input v-model:value="createHealthPath" />
+                    <a-input style="color:khaki" v-model:value="createHealthPath" />
                 </a-form-item>
             </a-form>
             <!--抽屉底部-->
@@ -368,14 +413,19 @@ export default({
         const createDrawer = ref(false)
         const createDeployment = reactive({
             createName: '',
-            createNamespace: '',
+            createNamespace: 'default',
             createReplicas: 1,
             createImage: '',
             createResource: '',
             createHealthCheck: false,  //默认关闭探针
             createHealthPath: '',
             createLabelStr: '',
-            createContainerPort: ''
+            createContainerPort: '',
+            createLimitCpu: '',
+            createRequestCpu: '1',
+            createLimitMemory: '',
+            createRequestMemory: '1Gi',
+            createPodLabel:''
         })
         const createDeploymentData = reactive({
             url: common.k8sDeploymentCreate,
@@ -385,12 +435,17 @@ export default({
                 namespace: '',
                 replicas: 1,  //int int32
                 image: '',
-                cpu: '',
-                memory: '',
+                // cpu: '',
+                // memory: '',
+                pod_label:{},
+                limit_cpu:'',
+                limit_memory:'',
+                request_cpu:'',
+                request_memory:'',
                 health_check: false,//bool
                 health_path: '',
                 label: {},  //map[string]string
-                container_port: '',  //int  下边http client解析
+                container_port: '',  //int  下边http client解析 或者string后端再处理
                 cluster: ''
             }
         })
@@ -592,7 +647,12 @@ export default({
         function createDeploymentFunc() {
             //正则匹配，验证label的合法性
             let reg = new RegExp("(^[A-Za-z]+=[A-Za-z0-9]+).*")
-            if (!reg.test(createDeployment.createLabelStr)) {
+            //为空时reg.test(createDeployment.createLabelStr结果是false
+            if (!reg.test(createDeployment.createLabelStr) && createDeployment.createLabelStr!=='') {
+                message.warning("标签填写异常，请确认后重新填写1")
+                return
+            }
+            if (!reg.test(createDeployment.createPodLabel)&& createDeployment.createPodLabel!=='') {
                 message.warning("标签填写异常，请确认后重新填写")
                 return
             }
@@ -600,29 +660,38 @@ export default({
             appLoading.value = true
             //定义label、cpu和memory变量
             let label = new Map()
-            let cpu, memory
+            let podLabel =new Map()
+            // let cpu, memory
             //将label字符串转成数组
             let a = (createDeployment.createLabelStr).split(",")
-            //将数组转成map
+            let c = (createDeployment.createPodLabel).split(",")
+            //将数组转成map  后端用来接收的变量也是map即可直接正确json解码(gin的传入传出都json)
             a.forEach(item => {
                 let b = item.split("=")
                 label[b[0]] = b[1]
             })
+            c.forEach(item => {
+                let d = item.split("=")
+                podLabel[d[0]] = d[1]
+            })
             //将deployment的规格转成cpu和memory
-            let resourceList = createDeployment.createResource.split("/")
-            cpu = resourceList[0]
-            memory = resourceList[1] + "Gi"
+            // let resourceList = createDeployment.createResource.split("/")
+            // cpu = resourceList[0]
+            // memory = resourceList[1] + "Gi"
             //赋值
             createDeploymentData.params.label = label
-            createDeploymentData.params.cpu = cpu
-            createDeploymentData.params.memory = memory
+            createDeploymentData.params.limit_cpu = createDeployment.createLimitCpu
+            createDeploymentData.params.request_cpu = createDeployment.createRequestCpu
+            createDeploymentData.params.limit_memory = createDeployment.createLimitMemory
+            createDeploymentData.params.pod_label = podLabel
+            createDeploymentData.params.request_memory = createDeployment.createRequestMemory
             createDeploymentData.params.name = createDeployment.createName
             createDeploymentData.params.namespace = createDeployment.createNamespace
             createDeploymentData.params.replicas = createDeployment.createReplicas
             createDeploymentData.params.image = createDeployment.createImage
             createDeploymentData.params.health_check = createDeployment.createHealthCheck
             createDeploymentData.params.health_path = createDeployment.createHealthPath
-            createDeploymentData.params.container_port = parseInt(createDeployment.createContainerPort)
+            createDeploymentData.params.container_port = createDeployment.createContainerPort
             //vue中实现本地储存的方法：localStorage，在HTML5中，新加入了一个localStorage特性，这个特性主要是用来作为本地存储来使用的，解决了cookie存储空间不足的问题(cookie中每条cookie的存储空间为4k)，localStorage中一般浏览器支持的是5M大小，这个在不同的浏览器中localStorage会有所不同。
             createDeploymentData.params.cluster = localStorage.getItem('k8s_cluster')
             //注意类型对应
