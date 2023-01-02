@@ -56,6 +56,7 @@
         </a-card>
         <!-- 展示YAML信息的弹框 -->
         <a-modal
+            width="900px"
             v-model:visible="yamlModal"
             title="YAML信息"
             :confirm-loading="appLoading"
@@ -70,8 +71,8 @@
                 :value="contentYaml"
                 border
                 :options="cmOptions"
-                height="500"
-                style="font-size:14px;"
+                height="600"
+                style="font-size:19px;"
                 @change="onChange"
             ></codemirror>
         </a-modal>

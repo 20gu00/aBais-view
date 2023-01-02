@@ -100,6 +100,7 @@
         -->
         <a-modal
             v-model:visible="yamlModal"
+            width="900px"
             title="YAML信息"
             :confirm-loading="appLoading"
             cancelText="取消"
@@ -113,8 +114,8 @@
                 :value="contentYaml"
                 border
                 :options="cmOptions"
-                height="500"
-                style="font-size:14px;"
+                height="600"
+                style="font-size:19px;"
                 @change="onChange"
             ></codemirror>
         </a-modal>

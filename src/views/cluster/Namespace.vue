@@ -38,7 +38,7 @@
                     </template>
                     <template v-if="column.key === 'action'">
                         <c-button style="margin-bottom:5px;color:aqua" class="namespace-button" type="primary" icon="form-outlined" @click="getNamespaceDetail(record)">YAML</c-button>
-                        <c-button satyle="color:crimson" class="namespace-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delNamespace)">删除</c-button>
+                        <c-button style="color:crimson" class="namespace-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delNamespace)">删除</c-button>
                     </template>
                 </template>
             </a-table>
@@ -50,6 +50,7 @@
             :confirm-loading="appLoading"
             cancelText="取消"
             okText="更新"
+            width="900px"
             :ok-button-props="{ disabled: true }">
             <!-- codemirror编辑器 -->
             <!-- border 带边框 -->
@@ -59,8 +60,8 @@
                 :value="contentYaml"
                 border
                 :options="cmOptions"
-                height="500"
-                style="font-size:14px;"
+                height="600"
+                style="font-size:19px;"
                 @change="onChange"
             ></codemirror>
         </a-modal>

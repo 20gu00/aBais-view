@@ -31,13 +31,14 @@
                         <a-tag style="font-size:medium" color="color:linen;">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button style="margin-bottom:5px;color:aqua" class="node-button" type="primary" icon="form-outlined" @click="getNodeDetail(record)">YML</c-button>
+                        <c-button style="margin-bottom:5px;color:aqua" class="node-button" type="primary" icon="form-outlined" @click="getNodeDetail(record)">YAML</c-button>
                     </template>
                 </template>
             </a-table>
         </a-card>
         <!-- 展示YAML信息的弹框 -->
         <a-modal
+            width="900px"
             v-model:visible="yamlModal"
             title="YAML信息"
             :confirm-loading="appLoading"
@@ -51,10 +52,10 @@
             <!-- change 编辑器中的内容变化时触发 -->
             <codemirror
                 :value="contentYaml"
-                border
                 :options="cmOptions"
-                height="500"
-                style="font-size:14px;"
+                height="600"
+                border
+                style="font-size:19px;"
                 @change="onChange"
             ></codemirror>
         </a-modal>

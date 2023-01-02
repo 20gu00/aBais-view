@@ -44,7 +44,7 @@
                         <a-tag style="color:linen;font-size:medium">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button style="margin-bottom:5px;color:aqua" class="secret-button" type="primary" icon="form-outlined" @click="getSecretDetail(record)">YML</c-button>
+                        <c-button style="margin-bottom:5px;color:aqua" class="secret-button" type="primary" icon="form-outlined" @click="getSecretDetail(record)">YAML</c-button>
                         <c-button style="margin-bottom:5px;color:crimson" class="secret-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delSecret)">删除</c-button>
                     </template>
                 </template>
@@ -57,6 +57,7 @@
             :confirm-loading="appLoading"
             cancelText="取消"
             okText="更新"
+            width="900px"
             @ok="updateSecret">
             <!-- codemirror编辑器 -->
             <!-- border 带边框 -->
@@ -66,8 +67,8 @@
                 :value="contentYaml"
                 border
                 :options="cmOptions"
-                height="500"
-                style="font-size:14px;"
+                height="600"
+                style="font-size:19px;"
                 @change="onChange"
             ></codemirror>
         </a-modal>

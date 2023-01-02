@@ -87,6 +87,7 @@
             title="YAML信息"
             :confirm-loading="appLoading"
             cancelText="取消"
+            width="900px"
             okText="更新"
             @ok="updateIngress">
             <!-- codemirror编辑器 -->
@@ -97,8 +98,8 @@
                 :value="contentYaml"
                 border
                 :options="cmOptions"
-                height="500"
-                style="font-size:14px;"
+                height="600"
+                style="font-size:19px;"
                 @change="onChange"
             ></codemirror>
         </a-modal>
