@@ -114,8 +114,6 @@
                         <a-select-option style="color:aquamarine" value="ReadWriteMany/ReadOnlyMany">RWX/ROX</a-select-option>
                         <a-select-option style="color:aquamarine" value="ReadWriteOnce/ReadOnlyMany">ROX/RWO</a-select-option>
                         <a-select-option style="color:aquamarine" value="ReadWriteOnce/ReadWriteMany/ReadOnlyMany">RWO/RWX/ROX</a-select-option>
-
-
                     </a-select>
                 </a-form-item>
                 <a-form-item

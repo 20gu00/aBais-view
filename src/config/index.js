@@ -56,7 +56,7 @@ export default {
     k8sStatefulSetDetail: baseHost + '/api/v1/k8s/statefulset/detail',
     k8sStatefulSetUpdate: baseHost + '/api/v1/k8s/statefulset/update',
     k8sStatefulSetDel: baseHost + '/api/v1/k8s/statefulset/delete',
-    k8sStatefulSetCreate: baseHost + '/api/v1/k8s/statefulset/create',
+    k8sStatefulsetCreate: baseHost + '/api/v1/k8s/statefulset/create',
     //node
     k8sNodeList: baseHost + '/api/v1/k8s/nodes',
     k8sNodeDetail: baseHost + '/api/v1/k8s/node/detail',
