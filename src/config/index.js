@@ -62,6 +62,7 @@ export default {
     k8sPvList: baseHost + '/api/v1/k8s/pvs',
     k8sPvDetail: baseHost + '/api/v1/k8s/pv/detail',
     k8sPvDel: baseHost + '/api/v1/k8s/pv/delete',
+    k8sPvCreate:baseHost+'/api/v1/k8s/pv/create',
     //configmap
     k8sConfigmapList: baseHost + '/api/v1/k8s/configmaps',
     k8sConfigmapDetail: baseHost + '/api/v1/k8s/configmap/detail',

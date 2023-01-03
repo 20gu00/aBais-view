@@ -3,7 +3,9 @@
         <MainHead
             searchDescribe="关键词"
             @searchChange="getSearchValue"
-            @dataList="getPvList"/>
+            @dataList="getPvList"
+            add
+            @addFunc="handleAdd"/>
        <a-card :bodyStyle="{padding: '10px'}">
             <a-table
                 style="font-size:15px;" 
@@ -71,11 +73,75 @@
                 @change="onChange"
             ></codemirror>
         </a-modal>
+        <a-drawer
+            v-model:visible="createDrawer"
+            title="创建Namespace"
+            width="800px"
+            :footer-style="{ textAlign: 'right' }"
+            @close="onClose">
+            <br>
+            <a-form ref="formRef" :model="createPv" :labelCol="{style: {width: '30%'}}">
+                <a-form-item
+                    label="name"
+                    name="createName"
+                    :rules="[{ required: true, message: '请输入pv名称' }]">
+                    <a-input style="color:khaki" v-model:value="createName" />
+                </a-form-item>
+                <a-form-item
+                    label="storage class"
+                    name="createStorageClass"
+                    :rules="[{ required: true, message: '请输入storage_class' }]">
+                    <a-input style="color:khaki" v-model:value="createStorageClass" />
+                </a-form-item>
+                <a-form-item
+                    label="volume mode"
+                    name="createVolumeMode"
+                    :rules="[{ required: true, message: '请输入Volume Mode' }]">
+                    <a-select show-search style="width:140px;color:aquamarine" v-model:value="createVolumeMode" placeholder="请选择">
+                        <a-select-option style="color:aquamarine" value="Filesystem">Filesystem</a-select-option>
+                        <a-select-option style="color:aquamarine" value="Block">Block</a-select-option>
+                    </a-select>
+                </a-form-item>
+                <a-form-item
+                    label="access mode"
+                    name="createAccessMode"
+                    :rules="[{ required: true, message: '请输入Access Mode' }]">
+                    <a-select show-search style="width:140px;color:aquamarine" v-model:value="createAccessMode" placeholder="请选择">
+                        <a-select-option style="color:aquamarine" value="ReadWriteOnce">RWO</a-select-option>
+                        <a-select-option style="color:aquamarine" value="ReadWriteMany">RWX</a-select-option>
+                        <a-select-option style="color:aquamarine" value="ReadOnlyMany">ROX</a-select-option>
+                        <a-select-option style="color:aquamarine" value="ReadWriteOnce/ReadOnlyMany">RWO/ROX</a-select-option>
+                        <a-select-option style="color:aquamarine" value="ReadWriteMany/ReadOnlyMany">RWX/ROX</a-select-option>
+                        <a-select-option style="color:aquamarine" value="ReadWriteOnce/ReadOnlyMany">ROX/RWO</a-select-option>
+                        <a-select-option style="color:aquamarine" value="ReadWriteOnce/ReadWriteMany/ReadOnlyMany">RWO/RWX/ROX</a-select-option>
+
+
+                    </a-select>
+                </a-form-item>
+                <a-form-item
+                    label="storage"
+                    name="createStorage"
+                    :rules="[{ required: true, message: '请输入storage' }]">
+                    <a-input style="color:khaki" v-model:value="createStorage" />
+                </a-form-item>
+                <a-form-item
+                    label="path"
+                    name="createPath"
+                    :rules="[{ required: true, message: '请输入path' }]">
+                    <a-input style="color:khaki" v-model:value="createPath" />
+                </a-form-item>
+            </a-form>
+            <!--抽屉底部-->
+            <template #footer>
+                <a-button style="margin-right: 8px" @click="onClose()">取消</a-button>
+                <a-button type="primary" @click="formSubmit()">确定</a-button>
+            </template>
+        </a-drawer>
     </div>
 </template>
 
 <script>
-import { createVNode, reactive, ref } from 'vue';
+import { createVNode, reactive, ref ,toRefs} from 'vue';
 import MainHead from '@/components/MainHead';
 import httpClient from '@/request';
 import common from "@/config";
@@ -280,6 +346,95 @@ export default({
             })
         }
 
+        //创建
+        const formRef = ref()
+        const createDrawer = ref(false)
+        const createPv = reactive({
+            createName: '',
+            createStorageClass:'',
+            createStorage:'',
+            createVolumeMode:'Filesystem',
+            createPath:'',
+            createAccessMode:'ReadWriteOnce',
+        })
+        const createPvData = reactive({
+            url: common.k8sPvCreate,
+            params: {
+                name: '',
+                cluster: '',
+                storage_class:'',
+                volume_mode:'',
+                storage:'',
+                access_mode:'',
+                path:'',
+            }
+        })
+
+        //处理新增
+        function handleAdd() {
+            createDrawer.value = true
+        }
+        function resetForm() {
+            formRef.value.resetFields();
+        }
+        //验证表单
+        async function formSubmit() {
+            try {
+                await formRef.value.validateFields();
+                //console.log('Success:', values);
+                createPvFunc()
+            } catch (errorInfo) {
+                console.log('Failed:', errorInfo);
+            }
+        }
+        //创建deployment
+        function createPvFunc() {
+            let storage
+            storage=createPv.createStorage+"Gi"
+            //加载loading动画
+            appLoading.value = true
+            createPvData.params.name = createPv.createName
+            createPvData.params.storage_class = createPv.createStorageClass
+            createPvData.params.storage = storage
+            createPvData.params.path = createPv.createPath
+            createPvData.params.volume_mode = createPv.createVolumeMode
+            createPvData.params.access_mode = createPv.createAccessMode
+            createPvData.params.cluster = localStorage.getItem('k8s_cluster')
+            //注意类型对应
+            httpClient.post(createPvData.url, createPvData.params)
+            .then(res => {
+                message.success(res.msg)
+            })
+            .catch(res => {
+                message.error(res.msg)
+            })
+            .finally(() => {
+                //重置表单
+                resetForm()
+                getPvList()
+                //关闭抽屉
+                createDrawer.value = false
+            })
+        }
+        //关闭抽屉
+        function onClose () {
+            Modal.confirm({
+                title: "是否确认关闭? ",
+                icon: createVNode(ExclamationCircleOutlined),
+                content: createVNode('div', {
+                    //style: 'color:red;',
+                }),
+                cancelText: '取消',
+                okText: '确认',
+                onOk() {
+                    createDrawer.value = false
+                    resetForm()  //重置表单
+                },
+                onCancel() {
+                    createDrawer.value = true
+                }
+            })
+        }
         return {
             appLoading,
             pagination,
@@ -289,6 +444,9 @@ export default({
             contentYaml,
             yamlModal,
             cmOptions,
+            createDrawer,
+            createPv,
+            formRef,
             timeTrans,
             ellipsis,
             handleTableChange,
@@ -297,7 +455,11 @@ export default({
             getPvDetail,
             onChange,
             delPv,
-            showConfirm
+            showConfirm,
+            ...toRefs(createPv),
+            handleAdd,
+            onClose,
+            formSubmit
         }
     },
 })
