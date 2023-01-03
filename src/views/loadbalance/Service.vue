@@ -85,17 +85,18 @@
             <br>
             <a-form ref="formRef" :model="createSvc" :labelCol="{style: {width: '30%'}}">
                 <a-form-item
-                    label="名称"
+                    label="name"
                     name="cName"
                     :rules="[{ required: true, message: '请输入Svc名称' }]">
-                    <a-input v-model:value="cName" />
+                    <a-input style="color:khaki" v-model:value="cName" />
                 </a-form-item>
                 <a-form-item
-                    label="命名空间"
+                    label="namespace"
                     name="cNamespace"
-                    :rules="[{ required: true, message: '请选择命名空间' }]">
-                    <a-select show-search style="width:140px;" v-model:value="cNamespace" placeholder="请选择">
+                    :rules="[{ required: true, message: '请选择namespace' }]">
+                    <a-select show-search style="width:140px;color:khaki" v-model:value="cNamespace" placeholder="请选择">
                         <a-select-option
+                            style="color:khaki"
                             v-for="(item, index) in namespaceList"
                             :key="index"
                             :value="item.metadata.name">
@@ -104,38 +105,38 @@
                     </a-select>
                 </a-form-item>
                 <a-form-item
-                    label="标签"
+                    label="label"
                     name="cLabelStr"
-                    :rules="[{ required: true, message: '请输入标签' }]">
-                    <a-input v-model:value="cLabelStr" placeholder="project=ms,app=gateway" />
+                    :rules="[{ required: true, message: '请输入label' }]">
+                    <a-input style="color:khaki" v-model:value="cLabelStr" placeholder="project=ms,app=gateway" />
                 </a-form-item>
                 <a-form-item
                     label="类型"
                     name="cType"
                     :rules="[{ required: true, message: '请输入类型' }]">
-                    <a-select style="width:140px;" v-model:value="cType" placeholder="请选择">
-                        <a-select-option value="ClusterIP">ClusterIP</a-select-option>
-                        <a-select-option value="NodePort">NodePort</a-select-option>
+                    <a-select style="width:140px;color:khaki" v-model:value="cType" placeholder="请选择">
+                        <a-select-option style="color:khaki" value="ClusterIP">ClusterIP</a-select-option>
+                        <a-select-option style="color:khaki" value="NodePort">NodePort</a-select-option>
                     </a-select>
                 </a-form-item>
                 <a-form-item
-                    label="容器端口"
+                    label="container port"
                     name="cContainerPort"
-                    :rules="[{ required: true, message: '请输入容器端口' }]">
-                    <a-input v-model:value="cContainerPort" placeholder="80" />
+                    :rules="[{ required: true, message: '请输入container port' }]">
+                    <a-input style="color:khaki" v-model:value="cContainerPort"/>
                 </a-form-item>
                 <a-form-item
-                    label="Service端口"
+                    label="service port"
                     name="cPort"
-                    :rules="[{ required: true, message: '请输入service端口' }]">
-                    <a-input v-model:value="cPort" placeholder="80" />
+                    :rules="[{ required: true, message: '请输入service port' }]">
+                    <a-input style="color:khaki" v-model:value="cPort"/>
                 </a-form-item>
                 <a-form-item
                     v-if="createSvc.cType == 'NodePort'"
                     label="NodePort"
                     name="cNodePort"
-                    :rules="[{ required: true, message: '请输入nodeport' }]">
-                    <a-input v-model:value="cNodePort" placeholder="30001" />
+                    :rules="[{ required: false, message: '请输入nodeport' }]">
+                    <a-input style="color:khaki" v-model:value="cNodePort" placeholder="30001" />
                 </a-form-item>
             </a-form>
             <template #footer>
@@ -392,7 +393,7 @@ export default({
         //删除svc
         function delSvc(name) {
             appLoading.value = true
-            delSvcData.params.svc_name = name
+            delSvcData.params.service_name = name
             delSvcData.params.namespace = namespaceValue.value
             delSvcData.params.cluster = localStorage.getItem('k8s_cluster')
             httpClient.delete(delSvcData.url, {data: delSvcData.params})
@@ -466,6 +467,7 @@ export default({
             createSvcData.params.port = parseInt(createSvc.cPort)
             createSvcData.params.node_port = parseInt(createSvc.cNodePort)
             createSvcData.params.label = label
+            createSvcData.params.type=createSvc.cType
             createSvcData.params.cluster = localStorage.getItem('k8s_cluster')
             httpClient.post(createSvcData.url, createSvcData.params)
             .then(res => {
