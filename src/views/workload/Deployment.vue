@@ -649,7 +649,7 @@ export default({
             let reg = new RegExp("(^[A-Za-z]+=[A-Za-z0-9]+).*")
             //为空时reg.test(createDeployment.createLabelStr结果是false
             if (!reg.test(createDeployment.createLabelStr) && createDeployment.createLabelStr!=='') {
-                message.warning("标签填写异常，请确认后重新填写1")
+                message.warning("标签填写异常，请确认后重新填写")
                 return
             }
             if (!reg.test(createDeployment.createPodLabel)&& createDeployment.createPodLabel!=='') {

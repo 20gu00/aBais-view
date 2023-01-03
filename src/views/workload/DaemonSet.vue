@@ -5,6 +5,7 @@
             @searchChange="getSearchValue"
             namespace
             @namespaceChange="getNamespaceValue"
+            @namespaceList="getNamespaceList"
             @dataList="getDaemonSetList"
             add
             @addFunc="handleAdd"/>
@@ -86,31 +87,7 @@
             :footer-style="{ textAlign: 'right' }"
             @close="onClose">
             <br>
-        <!--
-            a-form表单
-            表单包含输入框，单选框，下拉选择，多选框等用户输 入的组件。使用表单，可以收集、验证和提交数据。
-            表单内常用组件：
-            a-input：输入框
-            a-select：下拉选择框
-            a-checkbox-group：多选框
-            a-radio-group ：单选框
-            a-switch：开关
-
-            <a-form></a-form>:
-            model 表单数据对象
-            labelCol label 标签布局，同 <Col> 组件，设置 span offset 值，如 {span: 3, offset: 12} 或 sm: {span:3, offset: 12}
-            rules 表单验证规则
-            layout 表单布局
-            labelAlign label 标签的文本对齐方式
-            ref 用来获取dom元素或者组件
-        -->
             <a-form ref="formRef" :model="createDaemonset" :labelCol="{style: {width: '30%'}}">
-                <!--
-                    label label 标签的文本
-                    name 表单域 model 字段，在使用 validate、resetFields 方法的情况下， 该属性是必填的
-                    rules 表单验证规则
-                -->
-                <!--每个表单项目-->
                 <a-form-item
                     label="name"
                     name="createName"
@@ -119,6 +96,7 @@
                     <a-input style="color:khaki" v-model:value="createName" />
                 </a-form-item>
                 <a-form-item
+                    style="color:khaki"
                     label="namespace"
                     name="createNamespace"
                     :rules="[{ required: true, message: '请选择namespace' }]">
@@ -126,27 +104,13 @@
                     <a-select show-search  style="width:140px;color:khaki" v-model:value="createNamespace" placeholder="请选择">
                         <!--可选项 遍历-->
                         <a-select-option
+                            style="color:khaki"
                             v-for="(item, index) in namespaceList"
                             :key="index"
                             :value="item.metadata.name">
                             {{ item.metadata.name }}
                         </a-select-option>
                     </a-select>
-                </a-form-item>
-                <a-form-item
-                    label="replicas"
-                    name="createReplicas">
-                    <!--数字输入 最大最小的限制-->
-                    <a-input-number style="color:khaki" v-model:value="createReplicas" :min="1" :max="50"></a-input-number>
-                    <!--提示-->
-                    <a-popover>
-                        <template #content>
-                            <span style="color:aquamarine">副本数Min1，Max50</span>
-                        </template>
-                        <!--信息圈概述  提示-->
-                        <br>
-                        <info-circle-outlined style="margin-left:10px;color:greenyellow" />
-                    </a-popover>
                 </a-form-item>
                 <a-form-item
                     label="image"
@@ -237,7 +201,7 @@
 
 <script>
 //导入方法
-import { createVNode, reactive, ref } from 'vue';
+import { createVNode, reactive, ref,toRefs } from 'vue';
 //类似别名
 import MainHead from '@/components/MainHead';
 import httpClient from '@/request';
@@ -312,6 +276,8 @@ export default({
         const contentYaml = ref('')
         const yamlModal = ref(false)
         const cmOptions = common.cmOptions
+
+        const namespaceList = ref([])
         const daemonSetDetail =  reactive({
             metadata: {}
         })
@@ -374,6 +340,9 @@ export default({
         //编辑器内容变化时触发的方式,用于将更新的内容复制到变量中
         function onChange(val) {
             contentYaml.value = val
+        }
+        function getNamespaceList(val) {
+            namespaceList.value = val
         }
         //列表
         function getDaemonSetList() {
@@ -474,6 +443,132 @@ export default({
             })
         }
 
+        //创建
+        const formRef = ref()
+        const createDrawer = ref(false)
+        const createDaemonset = reactive({
+            createName: '',
+            createNamespace: 'default',
+            createLabel: '',
+            createImage: '',
+            createLimitCpu: '',
+            createLimitMemory: '',
+            createRequestCpu: '1',
+            createRequestMemory: '1Gi',
+            createContainerPort: '',
+            createHealthCheck: false,
+            createHealthPath: '',
+            createPodLabel:'',
+        })
+        const createDaemonsetData = reactive({
+            url: common.k8sDaemonsetCreate,
+            params: {
+                name: '',
+                cluster: '',
+                namespace:'',
+                image:'',
+                label:{},
+                pod_label:{},
+                limit_cpu:'',
+                limit_memory:'',
+                request_cpu:'',
+                request_memory:'',
+                container_port:'',
+                health_check:false,
+                health_path:'',
+            }
+        })
+
+        //处理新增
+        function handleAdd() {
+            createDrawer.value = true
+        }
+        function resetForm() {
+            formRef.value.resetFields();
+        }
+        //验证表单
+        async function formSubmit() {
+            try {
+                await formRef.value.validateFields();
+                //console.log('Success:', values);
+                createDaemonsetFunc()
+            } catch (errorInfo) {
+                console.log('Failed:', errorInfo);
+            }
+        }
+        //创建deployment
+        function createDaemonsetFunc() {
+            let reg = new RegExp("(^[A-Za-z]+=[A-Za-z0-9]+).*")
+            if (!reg.test(createDaemonset.createLabel) && createDaemonset.createLabel!=='') {
+                message.warning("标签填写异常，请确认后重新填写")
+                return
+            }
+            if (!reg.test(createDaemonset.createPodLabel)&& createDaemonset.createPodLabel!=='') {
+                message.warning("标签填写异常，请确认后重新填写")
+                return
+            }
+            appLoading.value = true
+            let label = new Map()
+            let podLabel =new Map()
+            let a = (createDaemonset.createLabel).split(",")
+            let c = (createDaemonset.createPodLabel).split(",")
+            a.forEach(item => {
+                let b = item.split("=")
+                label[b[0]] = b[1]
+            })
+            c.forEach(item => {
+                let d = item.split("=")
+                podLabel[d[0]] = d[1]
+            })
+            //加载loading动画
+            createDaemonsetData.params.label = label
+            createDaemonsetData.params.limit_cpu = createDaemonset.createLimitCpu
+            createDaemonsetData.params.request_cpu = createDaemonset.createRequestCpu
+            createDaemonsetData.params.limit_memory = createDaemonset.createLimitMemory
+            createDaemonsetData.params.pod_label = podLabel
+            createDaemonsetData.params.request_memory = createDaemonset.createRequestMemory
+            createDaemonsetData.params.name = createDaemonset.createName
+            createDaemonsetData.params.namespace = createDaemonset.createNamespace
+            createDaemonsetData.params.image = createDaemonset.createImage
+            createDaemonsetData.params.health_check = createDaemonset.createHealthCheck
+            createDaemonsetData.params.health_path = createDaemonset.createHealthPath
+            createDaemonsetData.params.container_port = createDaemonset.createContainerPort
+            //vue中实现本地储存的方法：localStorage，在HTML5中，新加入了一个localStorage特性，这个特性主要是用来作为本地存储来使用的，解决了cookie存储空间不足的问题(cookie中每条cookie的存储空间为4k)，localStorage中一般浏览器支持的是5M大小，这个在不同的浏览器中localStorage会有所不同。
+            createDaemonsetData.params.cluster = localStorage.getItem('k8s_cluster')
+            httpClient.post(createDaemonsetData.url, createDaemonsetData.params)
+            .then(res => {
+                message.success(res.msg)
+            })
+            .catch(res => {
+                message.error(res.msg)
+            })
+            .finally(() => {
+                //重置表单
+                resetForm()
+                getDaemonSetList()
+                //关闭抽屉
+                createDrawer.value = false
+            })
+        }
+        //关闭抽屉
+        function onClose () {
+            Modal.confirm({
+                title: "是否确认关闭? ",
+                icon: createVNode(ExclamationCircleOutlined),
+                content: createVNode('div', {
+                    //style: 'color:red;',
+                }),
+                cancelText: '取消',
+                okText: '确认',
+                onOk() {
+                    createDrawer.value = false
+                    resetForm()  //重置表单
+                },
+                onCancel() {
+                    createDrawer.value = true
+                }
+            })
+        }
         return {
             appLoading,
             pagination,
@@ -483,6 +578,10 @@ export default({
             contentYaml,
             yamlModal,
             cmOptions,
+            createDrawer,
+            createDaemonset,
+            namespaceList,
+            formRef,
             timeTrans,
             ellipsis,
             handleTableChange,
@@ -493,7 +592,12 @@ export default({
             onChange,
             updateDaemonSet,
             showConfirm,
-            delDaemonSet
+            delDaemonSet,
+            ...toRefs(createDaemonset),
+            handleAdd,
+            onClose,
+            formSubmit,
+            getNamespaceList,
         }
     },
 })

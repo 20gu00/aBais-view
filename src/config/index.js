@@ -50,11 +50,13 @@ export default {
     k8sDaemonSetDetail: baseHost + '/api/v1/k8s/daemonset/detail',
     k8sDaemonSetUpdate: baseHost + '/api/v1/k8s/daemonset/update',
     k8sDaemonSetDel: baseHost + '/api/v1/k8s/daemonset/delete',
+    k8sDaemonsetCreate:baseHost + '/api/v1/k8s/daemonset/create',
     //statefulset
     k8sStatefulSetList: baseHost + '/api/v1/k8s/statefulsets',
     k8sStatefulSetDetail: baseHost + '/api/v1/k8s/statefulset/detail',
     k8sStatefulSetUpdate: baseHost + '/api/v1/k8s/statefulset/update',
     k8sStatefulSetDel: baseHost + '/api/v1/k8s/statefulset/delete',
+    k8sStatefulSetCreate: baseHost + '/api/v1/k8s/statefulset/create',
     //node
     k8sNodeList: baseHost + '/api/v1/k8s/nodes',
     k8sNodeDetail: baseHost + '/api/v1/k8s/node/detail',
