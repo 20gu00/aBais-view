@@ -12,6 +12,7 @@ export default {
     k8sNamespaceList: baseHost + '/api/v1/k8s/namespaces',
     k8sNamespaceDetail: baseHost + '/api/v1/k8s/namespace/detail',
     k8sNamespaceDel: baseHost + '/api/v1/k8s/namespace/delete',
+    k8sNamespaceCreate: baseHost + '/api/v1/k8s/namespace/create',
     //deployment
     k8sDeploymentList: baseHost + '/api/v1/k8s/deployments',
     k8sDeploymentDetail: baseHost + '/api/v1/k8s/deployment/detail',

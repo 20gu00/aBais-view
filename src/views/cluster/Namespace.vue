@@ -4,7 +4,9 @@
         <MainHead
             searchDescribe="关键词"
             @searchChange="getSearchValue"
-            @dataList="getNamespaceList"/>
+            @dataList="getNamespaceList"
+            add
+            @addFunc="handleAdd"/>
         <!--通用卡片容器，可承载文字、列表、图片、段落-->
         <!--bodyStyle 内容区域自定义样式 css-->
        <a-card :bodyStyle="{padding: '10px'}">
@@ -65,11 +67,32 @@
                 @change="onChange"
             ></codemirror>
         </a-modal>
+        <a-drawer
+            v-model:visible="createDrawer"
+            title="创建Namespace"
+            width="800px"
+            :footer-style="{ textAlign: 'right' }"
+            @close="onClose">
+            <br>
+            <a-form ref="formRef" :model="createNamespace" :labelCol="{style: {width: '30%'}}">
+                <a-form-item
+                    label="name"
+                    name="createName"
+                    :rules="[{ required: true, message: '请输入Namespace名称' }]">
+                    <a-input style="color:khaki" v-model:value="createName" />
+                </a-form-item>
+            </a-form>
+            <!--抽屉底部-->
+            <template #footer>
+                <a-button style="margin-right: 8px" @click="onClose()">取消</a-button>
+                <a-button type="primary" @click="formSubmit()">确定</a-button>
+            </template>
+        </a-drawer>
     </div>
 </template>
 
 <script>
-import { createVNode, reactive, ref } from 'vue';
+import { createVNode, reactive, ref ,toRefs} from 'vue';
 import MainHead from '@/components/MainHead';
 import httpClient from '@/request';
 import common from "@/config";
@@ -109,6 +132,38 @@ export default({
                 width: 200
             }
         ])
+
+         //创建
+        const formRef = ref()
+        const createDrawer = ref(false)
+        const createNamespace = reactive({
+            createName: '',
+        })
+        const createNamespaceData = reactive({
+            url: common.k8sNamespaceCreate,
+            params: {
+                name: '',
+                cluster: ''
+            }
+        })
+
+        //处理新增
+        function handleAdd() {
+            createDrawer.value = true
+        }
+        function resetForm() {
+            formRef.value.resetFields();
+        }
+        //验证表单
+        async function formSubmit() {
+            try {
+                await formRef.value.validateFields();
+                //console.log('Success:', values);
+                createNamespaceFunc()
+            } catch (errorInfo) {
+                console.log('Failed:', errorInfo);
+            }
+        }
         //常用项
         const appLoading = ref(false)
         const searchValue = ref('')
@@ -263,6 +318,47 @@ export default({
             })
         }
 
+        //创建deployment
+        function createNamespaceFunc() {
+            //加载loading动画
+            appLoading.value = true
+            createNamespaceData.params.name = createNamespace.createName
+            createNamespaceData.params.cluster = localStorage.getItem('k8s_cluster')
+            //注意类型对应
+            httpClient.post(createNamespaceData.url, createNamespaceData.params)
+            .then(res => {
+                message.success(res.msg)
+            })
+            .catch(res => {
+                message.error(res.msg)
+            })
+            .finally(() => {
+                //重置表单
+                resetForm()
+                getNamespaceList()
+                //关闭抽屉
+                createDrawer.value = false
+            })
+        }
+        //关闭抽屉
+        function onClose () {
+            Modal.confirm({
+                title: "是否确认关闭? ",
+                icon: createVNode(ExclamationCircleOutlined),
+                content: createVNode('div', {
+                    //style: 'color:red;',
+                }),
+                cancelText: '取消',
+                okText: '确认',
+                onOk() {
+                    createDrawer.value = false
+                    resetForm()  //重置表单
+                },
+                onCancel() {
+                    createDrawer.value = true
+                }
+            })
+        }
         return {
             appLoading,
             pagination,
@@ -272,6 +368,9 @@ export default({
             contentYaml,
             yamlModal,
             cmOptions,
+            createDrawer,
+            createNamespace,
+            formRef,
             timeTrans,
             ellipsis,
             handleTableChange,
@@ -280,7 +379,11 @@ export default({
             getNamespaceDetail,
             onChange,
             delNamespace,
-            showConfirm
+            showConfirm,
+            ...toRefs(createNamespace),
+            handleAdd,
+            onClose,
+            formSubmit
         }
     },
 })

@@ -5,7 +5,9 @@
             @searchChange="getSearchValue"
             namespace
             @namespaceChange="getNamespaceValue"
-            @dataList="getDaemonSetList"/>
+            @dataList="getDaemonSetList"
+            add
+            @addFunc="handleAdd"/>
        <a-card :bodyStyle="{padding: '10px'}">
             <a-table
                 style="font-size:15px;" 
@@ -77,6 +79,159 @@
                 @change="onChange"
             ></codemirror>
         </a-modal>
+        <a-drawer
+            v-model:visible="createDrawer"
+            title="创建Daemonset"
+            width="800px"
+            :footer-style="{ textAlign: 'right' }"
+            @close="onClose">
+            <br>
+        <!--
+            a-form表单
+            表单包含输入框，单选框，下拉选择，多选框等用户输 入的组件。使用表单，可以收集、验证和提交数据。
+            表单内常用组件：
+            a-input：输入框
+            a-select：下拉选择框
+            a-checkbox-group：多选框
+            a-radio-group ：单选框
+            a-switch：开关
+
+            <a-form></a-form>:
+            model 表单数据对象
+            labelCol label 标签布局，同 <Col> 组件，设置 span offset 值，如 {span: 3, offset: 12} 或 sm: {span:3, offset: 12}
+            rules 表单验证规则
+            layout 表单布局
+            labelAlign label 标签的文本对齐方式
+            ref 用来获取dom元素或者组件
+        -->
+            <a-form ref="formRef" :model="createDaemonset" :labelCol="{style: {width: '30%'}}">
+                <!--
+                    label label 标签的文本
+                    name 表单域 model 字段，在使用 validate、resetFields 方法的情况下， 该属性是必填的
+                    rules 表单验证规则
+                -->
+                <!--每个表单项目-->
+                <a-form-item
+                    label="name"
+                    name="createName"
+                    :rules="[{ required: true, message: '请输入Deployment名称' }]">
+                    <!--输入框 v-model本质v-bind v-on 双向绑定-->
+                    <a-input style="color:khaki" v-model:value="createName" />
+                </a-form-item>
+                <a-form-item
+                    label="namespace"
+                    name="createNamespace"
+                    :rules="[{ required: true, message: '请选择namespace' }]">
+                    <!--下拉选择框 placeholder占位符-->
+                    <a-select show-search  style="width:140px;color:khaki" v-model:value="createNamespace" placeholder="请选择">
+                        <!--可选项 遍历-->
+                        <a-select-option
+                            v-for="(item, index) in namespaceList"
+                            :key="index"
+                            :value="item.metadata.name">
+                            {{ item.metadata.name }}
+                        </a-select-option>
+                    </a-select>
+                </a-form-item>
+                <a-form-item
+                    label="replicas"
+                    name="createReplicas">
+                    <!--数字输入 最大最小的限制-->
+                    <a-input-number style="color:khaki" v-model:value="createReplicas" :min="1" :max="50"></a-input-number>
+                    <!--提示-->
+                    <a-popover>
+                        <template #content>
+                            <span style="color:aquamarine">副本数Min1，Max50</span>
+                        </template>
+                        <!--信息圈概述  提示-->
+                        <br>
+                        <info-circle-outlined style="margin-left:10px;color:greenyellow" />
+                    </a-popover>
+                </a-form-item>
+                <a-form-item
+                    label="image"
+                    name="createImage"
+                    :rules="[{ required: true, message: '请输入image' }]">
+                    <a-input style="color:khaki" v-model:value="createImage" />
+                    <a-popover>
+                        <template #content>
+                            <span style="color:aquamarine">多个镜像用","隔开,即一pod多容器场景</span>
+                        </template>
+                        <info-circle-outlined style="margin-left:10px;color:greenyellow" />
+                    </a-popover>
+                </a-form-item>
+                <a-form-item
+                    label="label"
+                    name="createLabelStr"
+                    :rules="[{ required: false, message: '请输入label' }]">
+                    <!--占位符 案例-->
+                    <a-input style="color:khaki" v-model:value="createLabelStr" placeholder="project=test,app=gateway" />
+                </a-form-item>
+                <a-form-item
+                    label="pod label"
+                    name="createPodLabel"
+                    :rules="[{ required: true, message: '请输入pod label' }]">
+                    <!--占位符 案例-->
+                    <a-input style="color:khaki" v-model:value="createPodLabel" placeholder="project=test,app=gateway" />
+                </a-form-item>
+                <a-form-item
+                    label="limit"
+                    name="limit资源"
+                    :rules="[{ required: false, message: '请输入limit资源' }]">
+                    <a-input style="color:khaki" v-model:value="createLimitCpu" placeholder="like 0.5 or 1 or2" />
+                    <a-input style="color:khaki" v-model:value="createLimitMemory" placeholder="like 100Mi or 1Gi" />
+                    <a-popover>
+                        <template #content>
+                            <span style="color:aquamarine">有先后顺序,对应image数目以image为参考,多了无意义,多了无意义,多个用","隔开</span>
+                        </template>
+                        <info-circle-outlined style="margin-left:10px;color:greenyellow" />
+                    </a-popover>
+                </a-form-item>
+                <a-form-item
+                    label="request"
+                    name="request资源"
+                    :rules="[{ required: false, message: '请输入request资源' }]">
+                    <a-input style="color:khaki" v-model:value="createRequestCpu" placeholder="like 0.5 or 1 or2" />
+                    <a-input style="color:khaki" v-model:value="createRequestMemory" placeholder="like 100Mi or 1Gi" />
+                    <a-popover>
+                        <template #content>
+                            <span style="color:aquamarine">有先后顺序,对应image,数目以image为参考,多了无意义,多了无意义,多个用","隔开</span>
+                        </template>
+                        <info-circle-outlined style="margin-left:10px;color:greenyellow" />
+                    </a-popover>
+                </a-form-item>
+                <a-form-item
+                    label="container port"
+                    name="createContainerPort"
+                    :rules="[{ required: true, message: '请输入端口号' }]">
+                    <a-input style="color:khaki" v-model:value="createContainerPort" />
+                    <a-popover>
+                        <template #content>
+                            <span style="color:aquamarine">多个端口用","隔开,即一pod多容器场景(数目与image对应)</span>
+                        </template>
+                        <info-circle-outlined style="margin-left:10px;color:greenyellow" />
+                    </a-popover>
+                </a-form-item>
+                <a-form-item
+                    label="health check"
+                    name="createHealthCheck">
+                    <a-switch v-model:checked="createHealthCheck" />
+                </a-form-item>
+                <!--默认简单的路径 ping检测-->
+                <a-form-item
+                    v-if="createHealthCheck"
+                    label="检测路径"
+                    name="createHealthPath"
+                    :rules="[{ required: true, message: '请输入要进行健康检测的路径' }]">
+                    <a-input style="color:khaki" v-model:value="createHealthPath" />
+                </a-form-item>
+            </a-form>
+            <!--抽屉底部-->
+            <template #footer>
+                <a-button style="margin-right: 8px" @click="onClose()">取消</a-button>
+                <a-button type="primary" @click="formSubmit()">确定</a-button>
+            </template>
+        </a-drawer>
     </div>
 </template>
 
