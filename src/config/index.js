@@ -80,6 +80,7 @@ export default {
     //pvc
     k8sPvcList: baseHost + '/api/v1/k8s/pvcs',
     k8sPvcDetail: baseHost + '/api/v1/k8s/pvc/detail',
+    k8sPvcCreate: baseHost+'/api/v1/k8s/pvc/create',
     k8sPvcUpdate: baseHost + '/api/v1/k8s/pvc/update',
     k8sPvcDel: baseHost + '/api/v1/k8s/pvc/delete',
     //release

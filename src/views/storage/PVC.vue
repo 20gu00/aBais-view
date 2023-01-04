@@ -5,7 +5,9 @@
             @searchChange="getSearchValue"
             namespace
             @namespaceChange="getNamespaceValue"
-            @dataList="getPvcList"/>
+            @dataList="getPvcList"
+            add
+            @addFunc="handleAdd"/>
        <a-card :bodyStyle="{padding: '10px'}">
             <a-table
                 style="font-size:15px;" 
@@ -74,11 +76,84 @@
                 @change="onChange"
             ></codemirror>
         </a-modal>
+        <a-drawer
+            v-model:visible="createDrawer"
+            title="创建pvc"
+            width="800px"
+            :footer-style="{ textAlign: 'right' }"
+            @close="onClose">
+            <br>
+            <a-form ref="formRef" :model="createPvc" :labelCol="{style: {width: '30%'}}">
+                <a-form-item
+                    label="name"
+                    name="createName"
+                    :rules="[{ required: true, message: '请输入pvc名称' }]">
+                    <a-input style="color:khaki" v-model:value="createName" />
+                </a-form-item>
+                <a-form-item
+                    style="color:khaki"
+                    label="namespace"
+                    name="createNamespace"
+                    :rules="[{ required: true, message: '请选择namespace' }]">
+                    <!--下拉选择框 placeholder占位符-->
+                    <a-select show-search  style="width:140px;color:khaki" v-model:value="createNamespace" placeholder="请选择">
+                        <!--可选项 遍历-->
+                        <a-select-option
+                            style="color:khaki"
+                            v-for="(item, index) in namespaceList"
+                            :key="index"
+                            :value="item.metadata.name">
+                            {{ item.metadata.name }}
+                        </a-select-option>
+                    </a-select>
+                </a-form-item>
+                <a-form-item
+                    label="storage class"
+                    name="createStorageClass"
+                    :rules="[{ required: true, message: '请输入storage_class' }]">
+                    <a-input style="color:khaki" v-model:value="createStorageClass" />
+                </a-form-item>
+                <a-form-item
+                    label="volume mode"
+                    name="createVolumeMode"
+                    :rules="[{ required: true, message: '请输入Volume Mode' }]">
+                    <a-select show-search style="width:140px;color:aquamarine" v-model:value="createVolumeMode" placeholder="请选择">
+                        <a-select-option style="color:aquamarine" value="Filesystem">Filesystem</a-select-option>
+                        <a-select-option style="color:aquamarine" value="Block">Block</a-select-option>
+                    </a-select>
+                </a-form-item>
+                <a-form-item
+                    label="access mode"
+                    name="createAccessMode"
+                    :rules="[{ required: true, message: '请输入Access Mode' }]">
+                    <a-select show-search style="width:140px;color:aquamarine" v-model:value="createAccessMode" placeholder="请选择">
+                        <a-select-option style="color:aquamarine" value="ReadWriteOnce">RWO</a-select-option>
+                        <a-select-option style="color:aquamarine" value="ReadWriteMany">RWX</a-select-option>
+                        <a-select-option style="color:aquamarine" value="ReadOnlyMany">ROX</a-select-option>
+                        <a-select-option style="color:aquamarine" value="ReadWriteOnce/ReadOnlyMany">RWO/ROX</a-select-option>
+                        <a-select-option style="color:aquamarine" value="ReadWriteMany/ReadOnlyMany">RWX/ROX</a-select-option>
+                        <a-select-option style="color:aquamarine" value="ReadWriteOnce/ReadOnlyMany">ROX/RWO</a-select-option>
+                        <a-select-option style="color:aquamarine" value="ReadWriteOnce/ReadWriteMany/ReadOnlyMany">RWO/RWX/ROX</a-select-option>
+                    </a-select>
+                </a-form-item>
+                <a-form-item
+                    label="storage"
+                    name="createStorage"
+                    :rules="[{ required: true, message: '请输入storage' }]">
+                    <a-input style="color:khaki" v-model:value="createStorage" placeholder="1Gi"/>
+                </a-form-item>
+            </a-form>
+            <!--抽屉底部-->
+            <template #footer>
+                <a-button style="margin-right: 8px" @click="onClose()">取消</a-button>
+                <a-button type="primary" @click="formSubmit()">确定</a-button>
+            </template>
+        </a-drawer>
     </div>
 </template>
 
 <script>
-import { createVNode, reactive, ref } from 'vue';
+import { createVNode, reactive, ref, toRefs} from 'vue';
 import MainHead from '@/components/MainHead';
 import httpClient from '@/request';
 import common from "@/config";
@@ -325,6 +400,98 @@ export default({
                 // }
             })
         }
+        //创建
+const formRef = ref()
+        const createDrawer = ref(false)
+        const createPvc = reactive({
+            createName: '',
+            createStorageClass:'',
+            createStorage:'',
+            createVolumeMode:'Filesystem',
+            createPath:'',
+            createAccessMode:'ReadWriteOnce',
+            createNamespace:'default',
+        })
+        const createPvcData = reactive({
+            url: common.k8sPvcCreate,
+            params: {
+                name: '',
+                cluster: '',
+                storage_class:'',
+                volume_mode:'',
+                storage:'',
+                access_mode:'',
+                path:'',
+                namespace:'',
+            }
+        })
+
+        //处理新增
+        function handleAdd() {
+            createDrawer.value = true
+        }
+        function resetForm() {
+            formRef.value.resetFields();
+        }
+        //验证表单
+        async function formSubmit() {
+            try {
+                await formRef.value.validateFields();
+                //console.log('Success:', values);
+                createPvcFunc()
+            } catch (errorInfo) {
+                console.log('Failed:', errorInfo);
+            }
+        }
+        //创建deployment
+        function createPvcFunc() {
+            //加载loading动画
+            createPvcData.params.name = createPvc.createName
+            createPvcData.params.namespace = createPvc.createNamespace
+            createPvcData.params.storage_class=createPvc.createStorageClass
+            createPvcData.params.storage=createPvc.createStorage
+            createPvcData.params.access_mode=createPvc.createAccessMode
+            createPvcData.params.volume_mode=createPvc.createVolumeMode
+            //createConfigmapData.params.label=label
+            createPvcData.params.cluster = localStorage.getItem('k8s_cluster')
+            httpClient.post(createPvcData.url, createPvcData.params)
+            .then(res => {
+                message.success(res.msg)
+            })
+            .catch(res => {
+                message.error(res.msg)
+            })
+            .finally(() => {
+                //重置表单
+                resetForm()
+                getPvcList()
+                //关闭抽屉
+                createDrawer.value = false
+            })
+        }
+        const namespaceList = ref([])
+        function getNamespaceList(val) {
+            namespaceList.value = val
+        }
+        //关闭抽屉
+        function onClose () {
+            Modal.confirm({
+                title: "是否确认关闭? ",
+                icon: createVNode(ExclamationCircleOutlined),
+                content: createVNode('div', {
+                    //style: 'color:red;',
+                }),
+                cancelText: '取消',
+                okText: '确认',
+                onOk() {
+                    createDrawer.value = false
+                    resetForm()  //重置表单
+                },
+                onCancel() {
+                    createDrawer.value = true
+                }
+            })
+        }
 
         return {
             appLoading,
@@ -335,6 +502,9 @@ export default({
             contentYaml,
             yamlModal,
             cmOptions,
+            createDrawer,
+            createPvc,
+            formRef,
             timeTrans,
             ellipsis,
             handleTableChange,
@@ -345,7 +515,12 @@ export default({
             onChange,
             updatePvc,
             showConfirm,
-            delPvc
+            delPvc,
+            ...toRefs(createPvc),
+            handleAdd,
+            onClose,
+            formSubmit,
+            getNamespaceList
         }
     },
 })

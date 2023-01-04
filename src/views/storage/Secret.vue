@@ -6,6 +6,7 @@
             namespace
             @namespaceChange="getNamespaceValue"
             @dataList="getSecretList"
+            @namespaceList="getNamespaceList"
             add
             @addFunc="handleAdd"/>
        <a-card :bodyStyle="{padding: '10px'}">

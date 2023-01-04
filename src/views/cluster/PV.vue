@@ -4,6 +4,7 @@
             searchDescribe="关键词"
             @searchChange="getSearchValue"
             @dataList="getPvList"
+            @namespaceList="getNamespaceList"
             add
             @addFunc="handleAdd"/>
        <a-card :bodyStyle="{padding: '10px'}">
@@ -75,7 +76,7 @@
         </a-modal>
         <a-drawer
             v-model:visible="createDrawer"
-            title="创建Namespace"
+            title="创建pv"
             width="800px"
             :footer-style="{ textAlign: 'right' }"
             @close="onClose">
@@ -120,7 +121,7 @@
                     label="storage"
                     name="createStorage"
                     :rules="[{ required: true, message: '请输入storage' }]">
-                    <a-input style="color:khaki" v-model:value="createStorage" />
+                    <a-input style="color:khaki" v-model:value="createStorage" placeholder="like 1"/>
                 </a-form-item>
                 <a-form-item
                     label="path"
