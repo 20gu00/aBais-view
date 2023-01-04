@@ -5,7 +5,9 @@
             @searchChange="getSearchValue"
             namespace
             @namespaceChange="getNamespaceValue"
-            @dataList="getConfigmapList"/>
+            @dataList="getConfigmapList"
+            add
+            @addFunc="handleAdd"/>
        <a-card :bodyStyle="{padding: '10px'}">
             <a-table
                 style="font-size:15px;" 
@@ -41,7 +43,7 @@
                         <a-tag style="color:linen;font-size:medium">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button style="margin-bottom:5px;color:aqua" class="configmap-button" type="primary" icon="form-outlined" @click="getConfigmapDetail(record)">YML</c-button>
+                        <c-button style="margin-bottom:5px;color:aqua" class="configmap-button" type="primary" icon="form-outlined" @click="getConfigmapDetail(record)">YAML</c-button>
                         <c-button style="margin-bottom:5px;color:crimson" class="configmap-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delConfigmap)">删除</c-button>
                     </template>
                 </template>
@@ -69,11 +71,56 @@
                 @change="onChange"
             ></codemirror>
         </a-modal>
+        <a-drawer
+            v-model:visible="createDrawer"
+            title="创建configmap"
+            width="800px"
+            :footer-style="{ textAlign: 'right' }"
+            @close="onClose">
+            <br>
+            <a-form ref="formRef" :model="createConfigmap" :labelCol="{style: {width: '30%'}}">
+                <a-form-item
+                    label="name"
+                    name="createName"
+                    :rules="[{ required: true, message: '请输入configmap名称' }]">
+                    <a-input style="color:khaki" v-model:value="createName" />
+                </a-form-item>
+                <a-form-item
+                    style="color:khaki"
+                    label="namespace"
+                    name="createNamespace"
+                    :rules="[{ required: true, message: '请选择namespace' }]">
+                    <!--下拉选择框 placeholder占位符-->
+                    <a-select show-search  style="width:140px;color:khaki" v-model:value="createNamespace" placeholder="请选择">
+                        <!--可选项 遍历-->
+                        <a-select-option
+                            style="color:khaki"
+                            v-for="(item, index) in namespaceList"
+                            :key="index"
+                            :value="item.metadata.name">
+                            {{ item.metadata.name }}
+                        </a-select-option>
+                    </a-select>
+                </a-form-item>
+                <a-form-item
+                    label="data"
+                    name="createdata"
+                    :rules="[{ required: false, message: '请输入data' }]">
+                    <!--占位符 案例-->
+                    <a-input style="color:khaki" v-model:value="createData" placeholder="a=b,t=1" />
+                </a-form-item>
+            </a-form>
+            <!--抽屉底部-->
+            <template #footer>
+                <a-button style="margin-right: 8px" @click="onClose()">取消</a-button>
+                <a-button type="primary" @click="formSubmit()">确定</a-button>
+            </template>
+        </a-drawer>
     </div>
 </template>
 
 <script>
-import { createVNode, reactive, ref } from 'vue';
+import { createVNode, reactive, ref, toRefs} from 'vue';
 import MainHead from '@/components/MainHead';
 import httpClient from '@/request';
 import common from "@/config";
@@ -308,6 +355,100 @@ export default({
             })
         }
 
+        //创建
+        const formRef = ref()
+        const createDrawer = ref(false)
+        const createConfigmap = reactive({
+            createName: '',
+            createNamespace: 'default',
+            createData:'',
+        })
+        const createConfigmapData = reactive({
+            url: common.k8sConfigmapCreate,
+            params: {
+                name: '',
+                cluster: '',
+                namespace:'',
+                data:{},
+            }
+        })
+
+        //处理新增
+        function handleAdd() {
+            createDrawer.value = true
+        }
+        function resetForm() {
+            formRef.value.resetFields();
+        }
+        //验证表单
+        async function formSubmit() {
+            try {
+                await formRef.value.validateFields();
+                //console.log('Success:', values);
+                createConfigmapFunc()
+            } catch (errorInfo) {
+                console.log('Failed:', errorInfo);
+            }
+        }
+        //创建deployment
+        function createConfigmapFunc() {
+            let reg = new RegExp("(^[A-Za-z]+=[A-Za-z0-9]+).*")
+            if (!reg.test(createConfigmap.createData) && createConfigmap.createData!=='') {
+                message.warning("data填写异常，请确认后重新填写")
+                return
+            }
+
+            appLoading.value = true
+            let data = new Map()
+            let a = (createConfigmap.createData).split(",")
+            a.forEach(item => {
+                let b = item.split("=")
+                data[b[0]] = b[1]
+            })
+           
+            //加载loading动画
+            createConfigmapData.params.name = createConfigmap.createName
+            createConfigmapData.params.namespace = createConfigmap.createNamespace
+            createConfigmapData.params.data=data
+            createConfigmapData.params.cluster = localStorage.getItem('k8s_cluster')
+            httpClient.post(createConfigmapData.url, createConfigmapData.params)
+            .then(res => {
+                message.success(res.msg)
+            })
+            .catch(res => {
+                message.error(res.msg)
+            })
+            .finally(() => {
+                //重置表单
+                resetForm()
+                getConfigmapList()
+                //关闭抽屉
+                createDrawer.value = false
+            })
+        }
+        const namespaceList = ref([])
+        function getNamespaceList(val) {
+            namespaceList.value = val
+        }
+        //关闭抽屉
+        function onClose () {
+            Modal.confirm({
+                title: "是否确认关闭? ",
+                icon: createVNode(ExclamationCircleOutlined),
+                content: createVNode('div', {
+                    //style: 'color:red;',
+                }),
+                cancelText: '取消',
+                okText: '确认',
+                onOk() {
+                    createDrawer.value = false
+                    resetForm()  //重置表单
+                },
+                onCancel() {
+                    createDrawer.value = true
+                }
+            })
+        }
         return {
             appLoading,
             pagination,
@@ -316,7 +457,11 @@ export default({
             configmapDetail,
             contentYaml,
             yamlModal,
+            createDrawer,
             cmOptions,
+            createConfigmap,
+            namespaceList,
+            formRef,
             timeTrans,
             ellipsis,
             handleTableChange,
@@ -327,7 +472,12 @@ export default({
             onChange,
             updateConfigmap,
             showConfirm,
-            delConfigmap
+            delConfigmap,
+            ...toRefs(createConfigmap),
+            handleAdd,
+            onClose,
+            formSubmit,
+            getNamespaceList,
         }
     },
 })
