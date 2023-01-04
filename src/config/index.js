@@ -70,11 +70,13 @@ export default {
     k8sConfigmapDetail: baseHost + '/api/v1/k8s/configmap/detail',
     k8sConfigmapUpdate: baseHost + '/api/v1/k8s/configmap/update',
     k8sConfigmapDel: baseHost + '/api/v1/k8s/configmap/delete',
+    k8sConfigmapCreate: baseHost + '/api/v1/k8s/configmap/create',
     //secret
     k8sSecretList: baseHost + '/api/v1/k8s/secrets',
     k8sSecretDetail: baseHost + '/api/v1/k8s/secret/detail',
     k8sSecretUpdate: baseHost + '/api/v1/k8s/secret/update',
     k8sSecretDel: baseHost + '/api/v1/k8s/secret/delete',
+    k8sSecretCreate: baseHost + '/api/v1/k8s/secret/create',
     //pvc
     k8sPvcList: baseHost + '/api/v1/k8s/pvcs',
     k8sPvcDetail: baseHost + '/api/v1/k8s/pvc/detail',

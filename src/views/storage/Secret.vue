@@ -5,7 +5,9 @@
             @searchChange="getSearchValue"
             namespace
             @namespaceChange="getNamespaceValue"
-            @dataList="getSecretList"/>
+            @dataList="getSecretList"
+            add
+            @addFunc="handleAdd"/>
        <a-card :bodyStyle="{padding: '10px'}">
             <a-table
                 style="font-size:15px;" 
@@ -18,8 +20,8 @@
                     <template v-if="column.dataIndex === 'name'">
                         <span style="font-weight: bold;color:coral;font-size:medium">{{ record.metadata.name }}</span>
                     </template>
-                    <template v-if="column.dataIndex === 'labels'">
-                        <div v-for="(val, key) in record.metadata.labels" :key="key">
+                    <template v-if="column.dataIndex === 'annotations'">
+                        <div v-for="(val, key) in record.metadata.annotations" :key="key">
                             <a-popover>
                                 <template #content>
                                     <span>{{ key + ":" +val }}</span>
@@ -72,11 +74,65 @@
                 @change="onChange"
             ></codemirror>
         </a-modal>
+        <a-drawer
+            v-model:visible="createDrawer"
+            title="创建Secret"
+            width="800px"
+            :footer-style="{ textAlign: 'right' }"
+            @close="onClose">
+            <br>
+            <a-form ref="formRef" :model="createSecret" :labelCol="{style: {width: '30%'}}">
+                <a-form-item
+                    label="name"
+                    name="createName"
+                    :rules="[{ required: true, message: '请输入Secret名称' }]">
+                    <a-input style="color:khaki" v-model:value="createName" />
+                </a-form-item>
+                <a-form-item
+                    style="color:khaki"
+                    label="namespace"
+                    name="createNamespace"
+                    :rules="[{ required: true, message: '请选择namespace' }]">
+                    <a-select show-search  style="width:140px;color:khaki" v-model:value="createNamespace" placeholder="请选择">
+                        <!--可选项 遍历-->
+                        <a-select-option
+                            style="color:khaki"
+                            v-for="(item, index) in namespaceList"
+                            :key="index"
+                            :value="item.metadata.name">
+                            {{ item.metadata.name }}
+                        </a-select-option>
+                    </a-select>
+                </a-form-item>
+                <a-form-item
+                    style="color:khaki"
+                    label="type"
+                    name="createType"
+                    :rules="[{ required: true, message: '请选择type' }]">
+                    <a-select show-search style="width:140px;" v-model:value="createType" placeholder="请选择">
+                        <a-select-option value="Opaque">Opaque</a-select-option>
+                        <a-select-option value="kubernetes.io/dockerconfigjson ">kubernetes.io/dockerconfigjson </a-select-option>
+                    </a-select>
+                </a-form-item>
+                <a-form-item
+                    label="data"
+                    name="createData"
+                    :rules="[{ required: false, message: '请输入data' }]">
+                    <!--占位符 案例-->
+                    <a-input style="color:khaki" v-model:value="createData" placeholder="a=b,t=1" />
+                </a-form-item>
+            </a-form>
+            <!--抽屉底部-->
+            <template #footer>
+                <a-button style="margin-right: 8px" @click="onClose()">取消</a-button>
+                <a-button type="primary" @click="formSubmit()">确定</a-button>
+            </template>
+        </a-drawer>
     </div>
 </template>
 
 <script>
-import { createVNode, reactive, ref } from 'vue';
+import { createVNode, reactive, ref, toRefs} from 'vue';
 import MainHead from '@/components/MainHead';
 import httpClient from '@/request';
 import common from "@/config";
@@ -98,8 +154,8 @@ export default({
                 width:300
             },
             {
-                title: 'label',
-                dataIndex: 'labels',
+                title: 'annotations',
+                dataIndex: 'annotations',
                 width:300
             },
             {
@@ -315,6 +371,112 @@ export default({
                 // }
             })
         }
+//创建
+const formRef = ref()
+        const createDrawer = ref(false)
+        const createSecret = reactive({
+            createName: '',
+            createNamespace: 'default',
+            createData:'',
+            createType:'Opaque',
+        })
+        const createSecretData = reactive({
+            url: common.k8sSecretCreate,
+            params: {
+                name: '',
+                cluster: '',
+                namespace:'',
+                data:{},
+                type:'',
+            }
+        })
+
+        //处理新增
+        function handleAdd() {
+            createDrawer.value = true
+        }
+        function resetForm() {
+            formRef.value.resetFields();
+        }
+        //验证表单
+        async function formSubmit() {
+            try {
+                await formRef.value.validateFields();
+                //console.log('Success:', values);
+                createSecretFunc()
+            } catch (errorInfo) {
+                console.log('Failed:', errorInfo);
+            }
+        }
+        //创建deployment
+        function createSecretFunc() {
+            let reg = new RegExp("(^[A-Za-z]+=[A-Za-z0-9]+).*")
+            if (!reg.test(createSecret.createData) && createSecret.createData!=='') {
+                message.warning("data填写异常，请确认后重新填写")
+                return
+            }
+            // if (!reg.test(createConfigmap.createLabel) && createConfigmap.createLabel!=='') {
+            //     message.warning("label填写异常，请确认后重新填写")
+            //     return
+            // }
+            appLoading.value = true
+            let data = new Map()
+            //let label=new Map()
+            let a = (createSecret.createData).split(",")
+            //let l = (createConfigmap.createLabel).split(",")
+            a.forEach(item => {
+                let b = item.split("=")
+                data[b[0]] = b[1]
+            })
+            // l.forEach(item => {
+            //     let ll = item.split("=")
+            //     label[ll[0]] = ll[1]
+            // })
+            //加载loading动画
+            createSecretData.params.name = createSecret.createName
+            createSecretData.params.type = createSecret.createType
+            createSecretData.params.namespace = createSecret.createNamespace
+            createSecretData.params.data=data
+            //createConfigmapData.params.label=label
+            createSecretData.params.cluster = localStorage.getItem('k8s_cluster')
+            httpClient.post(createSecretData.url, createSecretData.params)
+            .then(res => {
+                message.success(res.msg)
+            })
+            .catch(res => {
+                message.error(res.msg)
+            })
+            .finally(() => {
+                //重置表单
+                resetForm()
+                getSecretList()
+                //关闭抽屉
+                createDrawer.value = false
+            })
+        }
+        const namespaceList = ref([])
+        function getNamespaceList(val) {
+            namespaceList.value = val
+        }
+        //关闭抽屉
+        function onClose () {
+            Modal.confirm({
+                title: "是否确认关闭? ",
+                icon: createVNode(ExclamationCircleOutlined),
+                content: createVNode('div', {
+                    //style: 'color:red;',
+                }),
+                cancelText: '取消',
+                okText: '确认',
+                onOk() {
+                    createDrawer.value = false
+                    resetForm()  //重置表单
+                },
+                onCancel() {
+                    createDrawer.value = true
+                }
+            })
+        }
 
         return {
             appLoading,
@@ -325,6 +487,10 @@ export default({
             contentYaml,
             yamlModal,
             cmOptions,
+            createSecret,
+            namespaceList,
+            formRef,
+            createDrawer,
             timeTrans,
             ellipsis,
             handleTableChange,
@@ -335,7 +501,12 @@ export default({
             onChange,
             updateSecret,
             showConfirm,
-            delSecret
+            delSecret,
+            ...toRefs(createSecret),
+            handleAdd,
+            onClose,
+            formSubmit,
+            getNamespaceList,
         }
     },
 })

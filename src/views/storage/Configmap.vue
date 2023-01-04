@@ -6,6 +6,7 @@
             namespace
             @namespaceChange="getNamespaceValue"
             @dataList="getConfigmapList"
+            @namespaceList="getNamespaceList"
             add
             @addFunc="handleAdd"/>
        <a-card :bodyStyle="{padding: '10px'}">
@@ -19,16 +20,6 @@
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.dataIndex === 'name'">
                         <span style="font-weight: bold;color:coral;font-size:medium">{{ record.metadata.name }}</span>
-                    </template>
-                    <template v-if="column.dataIndex === 'labels'">
-                        <div v-for="(val, key) in record.metadata.labels" :key="key">
-                            <a-popover>
-                                <template #content>
-                                    <span>{{ key + ":" +val }}</span>
-                                </template>
-                                <a-tag style="margin-bottom:5px;cursor:pointer;font-size:medium" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
-                            </a-popover>
-                        </div>
                     </template>
                     <template v-if="column.dataIndex === 'data'">
                         <a-popover
@@ -103,11 +94,11 @@
                     </a-select>
                 </a-form-item>
                 <a-form-item
-                    label="data"
-                    name="createdata"
+                    label="label"
+                    name="createLabel"
                     :rules="[{ required: false, message: '请输入data' }]">
                     <!--占位符 案例-->
-                    <a-input style="color:khaki" v-model:value="createData" placeholder="a=b,t=1" />
+                    <a-input style="color:khaki" v-model:value="createLabel" placeholder="a=b,t=1" />
                 </a-form-item>
             </a-form>
             <!--抽屉底部-->
@@ -139,11 +130,6 @@ export default({
             {
                 title: 'Configmap',
                 dataIndex: 'name',
-                width:300
-            },
-            {
-                title: 'label',
-                dataIndex: 'labels',
                 width:300
             },
             {
@@ -397,19 +383,28 @@ export default({
                 message.warning("data填写异常，请确认后重新填写")
                 return
             }
-
+            // if (!reg.test(createConfigmap.createLabel) && createConfigmap.createLabel!=='') {
+            //     message.warning("label填写异常，请确认后重新填写")
+            //     return
+            // }
             appLoading.value = true
             let data = new Map()
+            //let label=new Map()
             let a = (createConfigmap.createData).split(",")
+            //let l = (createConfigmap.createLabel).split(",")
             a.forEach(item => {
                 let b = item.split("=")
                 data[b[0]] = b[1]
             })
-           
+            // l.forEach(item => {
+            //     let ll = item.split("=")
+            //     label[ll[0]] = ll[1]
+            // })
             //加载loading动画
             createConfigmapData.params.name = createConfigmap.createName
             createConfigmapData.params.namespace = createConfigmap.createNamespace
             createConfigmapData.params.data=data
+            //createConfigmapData.params.label=label
             createConfigmapData.params.cluster = localStorage.getItem('k8s_cluster')
             httpClient.post(createConfigmapData.url, createConfigmapData.params)
             .then(res => {
