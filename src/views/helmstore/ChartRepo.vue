@@ -11,7 +11,7 @@
                 />
                 <a-button size="small" type="primary" ghost @click="handleAdd()">
                     <template #icon><PlusOutlined /></template>
-                    新增
+                    Add
                 </a-button>
                 <a-button size="small" @click="getChartList()">
                     <template #icon><UndoOutlined /></template>
@@ -686,6 +686,7 @@ export default({
             updateModal,
             updateRef,
             updateChart,
+            // appList,
             handleAdd,
             addSubmit,
             handleUpload,
