@@ -148,7 +148,7 @@
                 <a-form-item
                     label="Icon图标"
                     name="icon_url"
-                    :rules="[{ required: true, message: '请输入图标地址' }]">
+                    :rules="[{ required: false, message: '请输入图标地址' }]">
                     <a-input v-model:value="addChart.icon_url" addon-before="http://" style="width: 280px"/>
                 </a-form-item>
                 <a-form-item
@@ -180,6 +180,7 @@
             title="编辑Chart"
             :confirm-loading="appLoading"
             cancelText="取消"
+            width="500"
             okText="更新"
             :afterClose="handleClose"
             @ok="updateSubmit">
@@ -199,7 +200,7 @@
                 <a-form-item
                     label="Icon图标"
                     name="icon_url"
-                    :rules="[{ required: true, message: '请输入图标地址' }]">
+                    :rules="[{ required: false, message: '请输入图标地址' }]">
                     <a-input v-model:value="updateChart.icon_url" addon-before="http://" style="width: 280px"/>
                 </a-form-item>
                 <a-form-item
