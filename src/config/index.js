@@ -101,6 +101,12 @@ export default {
     k8sJobUpdate: baseHost + '/api/v1/k8s/job/update',
     k8sJobDel: baseHost + '/api/v1/k8s/job/delete',
     k8sJobCreate: baseHost + '/api/v1/k8s/job/create',
+    //cronjob
+    k8sCronJobList: baseHost + '/api/v1/k8s/cronjobs',
+    k8sCronJobDetail: baseHost + '/api/v1/k8s/cronjob/detail',
+    k8sCronJobUpdate: baseHost + '/api/v1/k8s/cronjob/update',
+    k8sCronJobDel: baseHost + '/api/v1/k8s/cronjob/delete',
+    k8sCronJobCreate: baseHost + '/api/v1/k8s/cronjob/create',
 
     //编辑器配置
     cmOptions: {
