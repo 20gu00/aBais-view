@@ -88,6 +88,12 @@ const routes = [
                 meta: {title: "StatefulSet", requireAuth: true},
                 component: () => import('@/views/workload/StatefulSet.vue'),
             },
+            {
+                path: "/workload/job",
+                name: "Job",
+                meta: {title: "Job", requireAuth: true},
+                component: () => import('@/views/workload/Job.vue'),
+            },
         ]
     },
     {

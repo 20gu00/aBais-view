@@ -95,6 +95,13 @@ export default {
     helmChartDel: baseHost + '/api/v1/helmstore/chart/delete',
     helmChartFileUpload: baseHost + '/api/v1/helmstore/chartfile/upload',
     helmChartFileDel: baseHost + '/api/v1/helmstore/chartfile/delete',
+    //job
+    k8sJobList: baseHost + '/api/v1/k8s/jobs',
+    k8sJobDetail: baseHost + '/api/v1/k8s/job/detail',
+    k8sJobUpdate: baseHost + '/api/v1/k8s/job/update',
+    k8sJobDel: baseHost + '/api/v1/k8s/job/delete',
+    k8sJobCreate: baseHost + '/api/v1/k8s/job/create',
+
     //编辑器配置
     cmOptions: {
         // 语言及语法模式
