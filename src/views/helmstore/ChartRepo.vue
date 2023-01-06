@@ -5,7 +5,7 @@
                 <a-input-search
                 allow-clear
                 v-model:value="searchValue"
-                placeholder="请输入"
+                placeholder="关键词"
                 style="width: 200px"
                 @search="getChartList"
                 />
@@ -25,7 +25,7 @@
                     <a-col :span="6" style="margin-bottom:10px;">
                         <a-card :bordered="false" class="chart-card">
                             <div style="float:left;margin-right:20px;padding: 20px 0;">
-                                <img style="width:60px;" :src="'http://' + item.icon_url"/>
+                                <img style="width:60px;" :src="'https://' + item.icon_url"/>
                             </div>
                             <div>
                                 <a style="font-size:16px;font-weight:bold;">{{ item.name }}</a><br><br>
@@ -149,7 +149,7 @@
                     label="Icon图标"
                     name="icon_url"
                     :rules="[{ required: false, message: '请输入图标地址' }]">
-                    <a-input v-model:value="addChart.icon_url" addon-before="http://" style="width: 280px"/>
+                    <a-input v-model:value="addChart.icon_url" addon-before="https://" style="width: 280px"/>
                 </a-form-item>
                 <a-form-item
                     label="描述"
@@ -201,7 +201,7 @@
                     label="Icon图标"
                     name="icon_url"
                     :rules="[{ required: false, message: '请输入图标地址' }]">
-                    <a-input v-model:value="updateChart.icon_url" addon-before="http://" style="width: 280px"/>
+                    <a-input v-model:value="updateChart.icon_url" addon-before="https://" style="width: 280px"/>
                 </a-form-item>
                 <a-form-item
                     label="描述"

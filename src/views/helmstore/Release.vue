@@ -1,14 +1,14 @@
 <template>
     <div>
         <MainHead
-            searchDescribe="请输入"
+            searchDescribe="关键词"
             @searchChange="getSearchValue"
             namespace
             @namespaceChange="getNamespaceValue"
             @dataList="getReleaseList"/>
        <a-card :bodyStyle="{padding: '10px'}">
             <a-table
-                style="font-size:12px;" 
+                style="font-size:15px;" 
                 :loading="appLoading" 
                 :columns="columns" 
                 :dataSource="releaseList"
@@ -32,7 +32,7 @@
                         <a-tag color="gray">{{ timeTrans(record.updated) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button style="margin-bottom:5px;" class="release-button" type="primary" icon="form-outlined" @click="getReleaseDetail(record)">Manifest</c-button>
+                        <c-button style="margin-bottom:5px;color:aqua" class="release-button" type="primary" icon="form-outlined" @click="getReleaseDetail(record)">YAML</c-button>
                         <c-button class="release-button" type="error" icon="delete-outlined" @click="showConfirm('卸载', record.name, delRelease)">卸载</c-button>
                     </template>
                 </template>
