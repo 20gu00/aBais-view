@@ -105,8 +105,17 @@
                 <a-form-item
                     label="command"
                     name="createCommand"
-                    :rules="[{ required: false, message: '请输入command' }]">
+                    :rules="[{ required: true, message: '请输入command' }]">
                     <a-input style="color:khaki" v-model:value="createCommand" placeholder="bin/sh|-c|for i in 9 8 7 6 5 4 3 2 1; do echo $i; done" />
+                </a-form-item>
+                <a-form-item
+                    label="restart policy"
+                    name="createRestartPolicy"
+                    :rules="[{ required: true, message: '请输入restart policy' }]">
+                    <a-select show-search style="width:140px;" v-model:value="createRestartPolicy" placeholder="请选择">
+                        <a-select-option style="color:aquamarine" value="OnFailure">OnFailure</a-select-option>
+                        <a-select-option style="color:aquamarine" value="Never">Never</a-select-option>
+                    </a-select>
                 </a-form-item>
             </a-form>
             <template #footer>
@@ -281,7 +290,7 @@ export default({
         //详情
         function getJobDetail(e) {
             appLoading.value = true
-            jobDetailData.params.daemonset_name = e.metadata.name
+            jobDetailData.params.job_name = e.metadata.name
             jobDetailData.params.namespace = namespaceValue.value
             jobDetailData.params.cluster = localStorage.getItem('k8s_cluster')
             httpClient.get(jobDetailData.url, {params: jobDetailData.params})
@@ -358,6 +367,7 @@ export default({
         const createDrawer = ref(false)
         const createJob = reactive({
             createName: '',
+            createRestartPolicy:'OnFailure',
             createNamespace: 'default',
             createImage: '',
             createCommand:'',
@@ -370,6 +380,7 @@ export default({
                 namespace:'',
                 image:'',
                 command:'',
+                restart_policy:'',
             }
         })
 
@@ -396,6 +407,7 @@ export default({
             //加载loading动画
 
             createJobData.params.name = createJob.createName
+            createJobData.params.restart_policy = createJob.createRestartPolicy
             createJobData.params.namespace = createJob.createNamespace
             createJobData.params.image = createJob.createImage
             createJobData.params.command = createJob.createCommand
