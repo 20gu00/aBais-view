@@ -94,6 +94,12 @@ const routes = [
                 meta: {title: "Job", requireAuth: true},
                 component: () => import('@/views/workload/Job.vue'),
             },
+            {
+                path: "/workload/cronjob",
+                name: "CronJob",
+                meta: {title: "CronJob", requireAuth: true},
+                component: () => import('@/views/workload/Cronjob.vue'),
+            },
         ]
     },
     {

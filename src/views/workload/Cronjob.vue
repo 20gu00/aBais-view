@@ -21,9 +21,12 @@
                     <template v-if="column.dataIndex === 'name'">
                         <span style="font-weight: bold;color:coral;font-size:medium">{{ record.metadata.name }}</span>
                     </template>
+                    <template v-if="column.dataIndex === 'schedule'">
+                        <span style="font-weight: bold;color:chartreuse;font-size:medium">{{ record.spec.schedule }}</span>
+                    </template>
                     <template v-if="column.dataIndex === 'image'">
                         <!--遍历容器-->
-                        <div v-for="(val, key) in record.spec.template.spec.containers" :key="key">
+                        <div v-for="(val, key) in record.spec.jobTemplate.spec.template.spec.containers" :key="key">
                             <a-popover>
                                 <template #content>
                                     <span>{{ val.image }}</span>
@@ -121,6 +124,7 @@
                     <a-select show-search style="width:140px;" v-model:value="createRestartPolicy" placeholder="请选择">
                         <a-select-option style="color:aquamarine" value="OnFailure">OnFailure</a-select-option>
                         <a-select-option style="color:aquamarine" value="Never">Never</a-select-option>
+                        <a-select-option style="color:aquamarine" value="Always">Always</a-select-option>
                     </a-select>
                 </a-form-item>
             </a-form>
@@ -155,6 +159,10 @@ export default({
             {
                 title: 'Job',
                 dataIndex: 'name'
+            },
+            {
+                title: 'schedule',
+                dataIndex: 'schedule'
             },
             {
                 title: 'image',
@@ -207,9 +215,9 @@ export default({
             metadata: {}
         })
         const cronJobDetailData =  reactive({
-            url: common.k8sJobDetail,
+            url: common.k8sCronJobDetail,
             params: {
-                job_name: '',
+                cronjob_name: '',
                 namespace: '',
                 cluster: ''
             }
@@ -227,7 +235,7 @@ export default({
         const delCronJobData = reactive({
             url: common.k8sCronJobDel,
             params: {
-                job_name: '',
+               cronjob_name: '',
                 namespace: '',
                 cluster: ''
             }
@@ -254,7 +262,7 @@ export default({
         function handleTableChange(val) {
             pagination.currentPage = val.current
             pagination.pagesize = val.pageSize
-            getJobList()
+            getCronJobList()
         }
         function getSearchValue(val) {
             searchValue.value = val
@@ -296,7 +304,7 @@ export default({
         //详情
         function getCronJobDetail(e) {
             appLoading.value = true
-            cronJobDetailData.params.job_name = e.metadata.name
+            cronJobDetailData.params.cronjob_name = e.metadata.name
             cronJobDetailData.params.namespace = namespaceValue.value
             cronJobDetailData.params.cluster = localStorage.getItem('k8s_cluster')
             httpClient.get(cronJobDetailData.url, {params: cronJobDetailData.params})
@@ -335,7 +343,7 @@ export default({
         //删除daemonSet
         function delCronJob(name) {
             appLoading.value = true
-            delCronJobData.params.job_name = name
+            delCronJobData.params.cronjob_name = name
             delCronJobData.params.namespace = namespaceValue.value
             delCronJobData.params.cluster = localStorage.getItem('k8s_cluster')
             httpClient.delete(delCronJobData.url, {data: delCronJobData.params})
