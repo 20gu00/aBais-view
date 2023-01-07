@@ -386,7 +386,7 @@ export default({
             try {
                 await formRef.value.validateFields();
                 //console.log('Success:', values);
-                createRoleFunc()
+                createRoleBindingFunc()
             } catch (errorInfo) {
                 console.log('Failed:', errorInfo);
             }
