@@ -60,7 +60,7 @@
             :confirm-loading="appLoading"
             cancelText="取消"
             okText="更新"
-            :ok-button-props="{ disabled: true }">
+            @ok="updatePv">
             <!-- codemirror编辑器 -->
             <!-- border 带边框 -->
             <!-- options  编辑器配置 -->
@@ -145,7 +145,7 @@ import MainHead from '@/components/MainHead';
 import httpClient from '@/request';
 import common from "@/config";
 import { message } from 'ant-design-vue';
-//import yaml2obj from 'js-yaml';
+import yaml2obj from 'js-yaml';
 import json2yaml from 'json2yaml';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { Modal } from 'ant-design-vue';
@@ -191,34 +191,34 @@ export default({
                 width: 200
             }
         ])
-        // const updatePvData = reactive({
-        //     url: common.k8sPvUpdate,
-        //     params: {
-        //         //namespace: '',
-        //         content: '',
-        //         cluster: ''
-        //     }
-        // })
+        const updatePvData = reactive({
+            url: common.K8sPvUpdate,
+            params: {
+                //namespace: '',
+                content: '',
+                cluster: ''
+            }
+        })
         //更新daemonSet
-        // function updatePv() {
-        //     appLoading.value = true
-        //     //将yaml格式的daemonSet对象转为json
-        //     let content = JSON.stringify(transObj(contentYaml.value))
-        //     //updateClusterRoleData.params.namespace = namespaceValue.value
-        //     updatePvData.params.content = content
-        //     updatePvData.params.cluster = localStorage.getItem('k8s_cluster')
-        //     httpClient.put(updatePvData.url, updatePvData.params)
-        //     .then(res => {
-        //         message.success(res.msg)
-        //     })
-        //     .catch(res => {
-        //         message.error(res.msg)
-        //     })
-        //     .finally(() => {
-        //         getPvList()
-        //         yamlModal.value = false
-        //     })
-        // }
+        function updatePv() {
+            appLoading.value = true
+            //将yaml格式的daemonSet对象转为json
+            let content = JSON.stringify(transObj(contentYaml.value))
+            //updateClusterRoleData.params.namespace = namespaceValue.value
+            updatePvData.params.content = content
+            updatePvData.params.cluster = localStorage.getItem('k8s_cluster')
+            httpClient.put(updatePvData.url, updatePvData.params)
+            .then(res => {
+                message.success(res.msg)
+            })
+            .catch(res => {
+                message.error(res.msg)
+            })
+            .finally(() => {
+                getPvList()
+                yamlModal.value = false
+            })
+        }
         //常用项
         const appLoading = ref(false)
         const searchValue = ref('')
@@ -273,9 +273,9 @@ export default({
             return json2yaml.stringify(content)
         }
         //yaml转对象
-        // function transObj(content) {
-        //     return yaml2obj.load(content)
-        // }
+        function transObj(content) {
+            return yaml2obj.load(content)
+        }
         function timeTrans(timestamp) {
             let date = new Date(new Date(timestamp).getTime() + 8 * 3600 * 1000)
             date = date.toJSON();
@@ -474,6 +474,8 @@ export default({
             createDrawer,
             createPv,
             formRef,
+            updatePvData,
+            updatePv,
             timeTrans,
             ellipsis,
             handleTableChange,
@@ -487,7 +489,6 @@ export default({
             handleAdd,
             onClose,
             formSubmit,
-            //updatePv,
         }
     },
 })

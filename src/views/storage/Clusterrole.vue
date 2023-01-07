@@ -433,7 +433,7 @@ export default({
 </script>
 
 <style scoped>
-    .pv-button {
+    .clusterrole-button {
         margin-right: 5px;
         width:77px;
     }
