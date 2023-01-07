@@ -107,6 +107,36 @@ export default {
     k8sCronJobUpdate: baseHost + '/api/v1/k8s/cronjob/update',
     k8sCronJobDel: baseHost + '/api/v1/k8s/cronjob/delete',
     k8sCronJobCreate: baseHost + '/api/v1/k8s/cronjob/create',
+    //role
+    k8sRoleList: baseHost + '/api/v1/k8s/roles',
+    k8sRoleDetail: baseHost + '/api/v1/k8s/role/detail',
+    k8sRoleUpdate: baseHost + '/api/v1/k8s/role/update',
+    k8sRoleDel: baseHost + '/api/v1/k8s/role/delete',
+    k8sRoleCreate: baseHost + '/api/v1/k8s/role/create',
+    //clusterrole
+    k8sClusterRoleList: baseHost + '/api/v1/k8s/clusterroles',
+    k8sClusterRoleDetail: baseHost + '/api/v1/k8s/clusterrole/detail',
+    k8sClusterRoleUpdate: baseHost + '/api/v1/k8s/clusterrole/update',
+    k8sClusterRoleDel: baseHost + '/api/v1/k8s/clusterrole/delete',
+    k8sClusterRoleCreate: baseHost + '/api/v1/k8s/clusterrole/create',
+    //rolebinding
+    k8sRoleBindingList: baseHost + '/api/v1/k8s/rolebindings',
+    k8sRoleBindingDetail: baseHost + '/api/v1/k8s/rolebinding/detail',
+    k8sRoleBindingUpdate: baseHost + '/api/v1/k8s/rolebinding/update',
+    k8sRoleBindingDel: baseHost + '/api/v1/k8s/rolebinding/delete',
+    k8sRoleBindingCreate: baseHost + '/api/v1/k8s/rolebinding/create',
+    //clusterrolebinding
+    k8sClusterRoleBindingList: baseHost + '/api/v1/k8s/clusterrolebindings',
+    k8sClusterRoleBindingDetail: baseHost + '/api/v1/k8s/clusterrolebinding/detail',
+    k8sClusterRoleBindingUpdate: baseHost + '/api/v1/k8s/clusterrolebinding/update',
+    k8sClusterRoleBindingDel: baseHost + '/api/v1/k8s/clusterrolebinding/delete',
+    k8sClusterRoleBindingCreate: baseHost + '/api/v1/k8s/clusterrolebinding/create',
+    //sa
+    k8sSaList: baseHost + '/api/v1/k8s/sas',
+    k8sSaDetail: baseHost + '/api/v1/k8s/sa/detail',
+    k8sSaUpdate: baseHost + '/api/v1/k8s/sa/update',
+    k8sSaDel: baseHost + '/api/v1/k8s/sa/delete',
+    k8sSaCreate: baseHost + '/api/v1/k8s/sa/create',
 
     //编辑器配置
     cmOptions: {

@@ -155,6 +155,36 @@ const routes = [
                 name: "PVC",
                 meta: {title: "PVC", requireAuth: true},
                 component: () => import('@/views/storage/PVC.vue'),
+            },
+            {
+                path: "/storage/role",
+                name: "Role",
+                meta: {title: "Role", requireAuth: true},
+                component: () => import('@/views/storage/Role.vue'),
+            },
+            {
+                path: "/storage/cluasterrole",
+                name: "ClusterRole",
+                meta: {title: "ClusterRole", requireAuth: true},
+                component: () => import('@/views/storage/Clusterrole.vue'),
+            },
+            {
+                path: "/storage/rolebinding",
+                name: "Rolebinding",
+                meta: {title: "Rolebinding", requireAuth: true},
+                component: () => import('@/views/storage/Rolebinding.vue'),
+            },
+            {
+                path: "/storage/clusterbinding",
+                name: "ClusterRoleBinding",
+                meta: {title: "ClusterRoleBinding", requireAuth: true},
+                component: () => import('@/views/storage/Clusterrolebinding.vue'),
+            },
+            {
+                path: "/storage/sa",
+                name: "Service Account",
+                meta: {title: "Service Account", requireAuth: true},
+                component: () => import('@/views/storage/Serviceaccount.vue'),
             }
         ]
     },
