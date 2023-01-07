@@ -27,7 +27,7 @@
                                 <template #content>
                                     <span>{{ val.name }}</span>
                                 </template>
-                                <a-tag style="margin-bottom:5px;cursor:pointer;font-size:medium" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
+                                <a-tag style="margin-bottom:5px;cursor:pointer;font-size:medium" color="blue">{{ ellipsis(val.name, 15) }}</a-tag>
                             </a-popover>
                         </div>
                     </template>
@@ -35,8 +35,8 @@
                         <a-tag style="color:linen;font-size:medium">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button style="margin-bottom:5px;color:aqua" class="sa-button" type="primary" icon="form-outlined" @click="getJobDetail(record)">YAML</c-button>
-                        <c-button style="color:crimson" class="sa-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delJob)">删除</c-button>
+                        <c-button style="margin-bottom:5px;color:aqua" class="sa-button" type="primary" icon="form-outlined" @click="getSaDetail(record)">YAML</c-button>
+                        <c-button style="color:crimson" class="sa-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delSa)">删除</c-button>
                     </template>
                 </template>
             </a-table>
@@ -175,7 +175,7 @@ export default({
         const saDetailData =  reactive({
             url: common.k8sSaDetail,
             params: {
-                role_name: '',
+                sa_name: '',
                 namespace: '',
                 cluster: ''
             }
@@ -193,7 +193,7 @@ export default({
         const delSaData = reactive({
             url: common.k8sSaDel,
             params: {
-                role_name: '',
+                sa_name: '',
                 namespace: '',
                 cluster: ''
             }
@@ -262,7 +262,7 @@ export default({
         //详情
         function getSaDetail(e) {
             appLoading.value = true
-            saDetailData.params.job_name = e.metadata.name
+            saDetailData.params.sa_name = e.metadata.name
             saDetailData.params.namespace = namespaceValue.value
             saDetailData.params.cluster = localStorage.getItem('k8s_cluster')
             httpClient.get(saDetailData.url, {params: saDetailData.params})
@@ -301,7 +301,7 @@ export default({
         //删除daemonSet
         function delSa(name) {
             appLoading.value = true
-            delSaData.params.job_name = name
+            delSaData.params.sa_name = name
             delSaData.params.namespace = namespaceValue.value
             delSaData.params.cluster = localStorage.getItem('k8s_cluster')
             httpClient.delete(delSaData.url, {data: delSaData.params})
