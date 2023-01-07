@@ -3,7 +3,8 @@
         <MainHead
             searchDescribe="关键词"
             @searchChange="getSearchValue"
-            @dataList="getNamespaceList"
+            @dataList="getClusterRoleList"
+            @namespaceList="getNamespaceList"
             add
             @addFunc="handleAdd"/>
        <a-card :bodyStyle="{padding: '10px'}">
@@ -22,7 +23,7 @@
                         <a-popover
                             :overlayStyle="{width:'520px'}">
                             <template #content>
-                                <div style="color:aquamarine; width:500px;height:500px;word-break:break-all;overflow-y:auto;">{{ record.rule }}</div>
+                                <div style="color:aquamarine; width:500px;height:500px;word-break:break-all;overflow-y:auto;">{{ record.rules }}</div>
                             </template>
                             <file-text-outlined style="font-size: 15px;" />
                         </a-popover>
@@ -31,22 +32,21 @@
                         <a-tag style="color:linen;font-size:medium">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button style="margin-bottom:5px;color:aqua" class="clusterrole-button" type="primary" icon="form-outlined" @click="getNamespaceDetail(record)">YAML</c-button>
-                        <c-button style="color:crimson" class="clusterrole-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delNamespace)">删除</c-button>
+                        <c-button style="margin-bottom:5px;color:aqua" class="clusterrole-button" type="primary" icon="form-outlined" @click="getClusterRoleDetail(record)">YAML</c-button>
+                        <c-button style="color:crimson" class="clusterrole-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delClusterRole)">删除</c-button>
                     </template>
                 </template>
             </a-table>
         </a-card>
         <!-- 展示YAML信息的弹框 -->
         <a-modal
+        width="900px"
             v-model:visible="yamlModal"
             title="YAML信息"
             :confirm-loading="appLoading"
             cancelText="取消"
             okText="更新"
-            width="900px"
             @ok="updateClusterRole">
-            <!-- :ok-button-props="{ disabled: true }"> -->
             <!-- codemirror编辑器 -->
             <!-- border 带边框 -->
             <!-- options  编辑器配置 -->
@@ -62,17 +62,17 @@
         </a-modal>
         <a-drawer
             v-model:visible="createDrawer"
-            title="创建Cluster Role"
+            title="创建cluster role"
             width="800px"
             :footer-style="{ textAlign: 'right' }"
             @close="onClose">
             <br>
             <a-form ref="formRef" :model="createClusterRole" :labelCol="{style: {width: '30%'}}">
                 <a-form-item
-                    label="cluster role"
-                    name="createClusterRole"
-                    :rules="[{ required: true, message: '请输入Cluster Role名称' }]">
-                    <a-input style="color:khaki" v-model:value="createClusterRole" />
+                    label="name"
+                    name="createName"
+                    :rules="[{ required: true, message: '请输入cluster role名称' }]">
+                    <a-input style="color:khaki" v-model:value="createName" />
                 </a-form-item>
                 <a-form-item
                     label="apiGroup"
@@ -93,6 +93,7 @@
                     <a-input style="color:khaki" v-model:value="createVerbs" placeholder="get|list|watch|create|update|patch|delete或者*"/>
                 </a-form-item>
             </a-form>
+            <!--抽屉底部-->
             <template #footer>
                 <a-button style="margin-right: 8px" @click="onClose()">取消</a-button>
                 <a-button type="primary" @click="formSubmit()">确定</a-button>
@@ -107,7 +108,7 @@ import MainHead from '@/components/MainHead';
 import httpClient from '@/request';
 import common from "@/config";
 import { message } from 'ant-design-vue';
-//import yaml2obj from 'js-yaml';
+import yaml2obj from 'js-yaml';
 import json2yaml from 'json2yaml';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { Modal } from 'ant-design-vue';
@@ -119,15 +120,13 @@ export default({
         //表结构
         const columns = ref([
             {
-                title: 'Namespace',
+                title: 'cluster role',
                 dataIndex: 'name'
             },
             {
                 title: 'rule',
-                dataIndex: 'rule',
-                width:350
+                dataIndex: 'rule'
             },
-
             {
                 title: '创建时间',
                 dataIndex: 'creationTimestamp'
@@ -139,38 +138,6 @@ export default({
                 width: 200
             }
         ])
-
-         //创建
-        const formRef = ref()
-        const createDrawer = ref(false)
-        const createClusterRole = reactive({
-            createClusterRole: '',
-        })
-        const createClusterRoleData = reactive({
-            url: common.k8sClusterRoleCreate,
-            params: {
-                name: '',
-                cluster: ''
-            }
-        })
-
-        //处理新增
-        function handleAdd() {
-            createDrawer.value = true
-        }
-        function resetForm() {
-            formRef.value.resetFields();
-        }
-        //验证表单
-        async function formSubmit() {
-            try {
-                await formRef.value.validateFields();
-                //console.log('Success:', values);
-                createClusterRoleFunc()
-            } catch (errorInfo) {
-                console.log('Failed:', errorInfo);
-            }
-        }
         //常用项
         const appLoading = ref(false)
         const searchValue = ref('')
@@ -210,11 +177,11 @@ export default({
             }
         })
         //删除
-        const delClusterRoleData = reactive({
+        const delclusterroleData = reactive({
             url: common.k8sClusterRoleDel,
             params: {
-                namespace_name: '',
-                namespace: '',
+                clusterrole_name: '',
+                //pv: '',
                 cluster: ''
             }
         })
@@ -225,9 +192,9 @@ export default({
             return json2yaml.stringify(content)
         }
         //yaml转对象
-        // function transObj(content) {
-        //     return yaml2obj.load(content)
-        // }
+        function transObj(content) {
+            return yaml2obj.load(content)
+        }
         function timeTrans(timestamp) {
             let date = new Date(new Date(timestamp).getTime() + 8 * 3600 * 1000)
             date = date.toJSON();
@@ -261,7 +228,7 @@ export default({
             clusterroleListData.params.limit = pagination.pagesize
             httpClient.get(clusterroleListData.url, {params: clusterroleListData.params})
             .then(res => {
-                //响应成功，获取namespace列表和total
+                //响应成功，获取pv列表和total
                 clusterroleList.value = res.data.items
                 pagination.total = res.data.total
             })
@@ -275,11 +242,11 @@ export default({
         //详情
         function getClusterRoleDetail(e) {
             appLoading.value = true
-            clusterroleDetailData.params.namespace_name = e.metadata.name
+            clusterroleDetailData.params.clusterrole_name = e.metadata.name
             clusterroleDetailData.params.cluster = localStorage.getItem('k8s_cluster')
             httpClient.get(clusterroleDetailData.url, {params: clusterroleDetailData.params})
             .then(res => {
-                //namespaceDetail = Object.assign(namespaceDetail, res.data)
+                //pvDetail = Object.assign(pvDetail, res.data)
                 contentYaml.value = transYaml(res.data)
                 yamlModal.value = true
             })
@@ -290,12 +257,12 @@ export default({
                 appLoading.value = false
             })
         }
-        //删除namespace
+        //删除pv
         function delClusterRole(name) {
             appLoading.value = true
-            delClusterRoleData.params.namespace_name = name
-            delClusterRoleData.params.cluster = localStorage.getItem('k8s_cluster')
-            httpClient.delete(delClusterRoleData.url, {data: delClusterRoleData.params})
+            delclusterroleData.params.clusterrole_name = name
+            delclusterroleData.params.cluster = localStorage.getItem('k8s_cluster')
+            httpClient.delete(delclusterroleData.url, {data: delclusterroleData.params})
             .then(res => {
                 message.success(res.msg)
             })
@@ -325,11 +292,79 @@ export default({
             })
         }
 
+        const updateClusterRoleData = reactive({
+            url: common.k8sClusterRoleUpdate,
+            params: {
+                //namespace: '',
+                content: '',
+                cluster: ''
+            }
+        })
+        //更新daemonSet
+        function updateClusterRole() {
+            appLoading.value = true
+            //将yaml格式的daemonSet对象转为json
+            let content = JSON.stringify(transObj(contentYaml.value))
+            //updateClusterRoleData.params.namespace = namespaceValue.value
+            updateClusterRoleData.params.content = content
+            updateClusterRoleData.params.cluster = localStorage.getItem('k8s_cluster')
+            httpClient.put(updateClusterRoleData.url, updateClusterRoleData.params)
+            .then(res => {
+                message.success(res.msg)
+            })
+            .catch(res => {
+                message.error(res.msg)
+            })
+            .finally(() => {
+                getClusterRoleList()
+                yamlModal.value = false
+            })
+        }
+        //创建
+        const formRef = ref()
+        const createDrawer = ref(false)
+        const createClusterRole = reactive({
+            createName: '',
+            createApiGroup:'',
+            createResources:'',
+            createVerbs:'',
+        })
+        const createClusterRoleData = reactive({
+            url: common.k8sClusterRoleCreate,
+            params: {
+                name: '',
+                cluster: '',
+                api_group:'',
+                resources:'',
+                verbs:'',
+            }
+        })
+
+        //处理新增
+        function handleAdd() {
+            createDrawer.value = true
+        }
+        function resetForm() {
+            formRef.value.resetFields();
+        }
+        //验证表单
+        async function formSubmit() {
+            try {
+                await formRef.value.validateFields();
+                //console.log('Success:', values);
+                createClusterRoleFunc()
+            } catch (errorInfo) {
+                console.log('Failed:', errorInfo);
+            }
+        }
         //创建deployment
         function createClusterRoleFunc() {
             //加载loading动画
             appLoading.value = true
             createClusterRoleData.params.name = createClusterRole.createName
+            createClusterRoleData.params.api_group = createClusterRole.createApiGroup
+            createClusterRoleData.params.resources = createClusterRole.createResources
+            createClusterRoleData.params.verbs = createClusterRole.createVerbs
             createClusterRoleData.params.cluster = localStorage.getItem('k8s_cluster')
             //注意类型对应
             httpClient.post(createClusterRoleData.url, createClusterRoleData.params)
@@ -382,6 +417,7 @@ export default({
             ellipsis,
             handleTableChange,
             getSearchValue,
+            updateClusterRole,
             getClusterRoleList,
             getClusterRoleDetail,
             onChange,
@@ -397,8 +433,9 @@ export default({
 </script>
 
 <style scoped>
-    .clusterrole-button {
+    .pv-button {
         margin-right: 5px;
+        width:77px;
     }
     .ant-form-item {
         margin-bottom: 20px;
