@@ -34,8 +34,8 @@
                         <a-tag style="color:linen;font-size:medium">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button style="margin-bottom:5px;color:aqua" class="job-button" type="primary" icon="form-outlined" @click="getJobDetail(record)">YAML</c-button>
-                        <c-button style="color:crimson" class="job-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delJob)">删除</c-button>
+                        <c-button style="margin-bottom:5px;color:aqua" class="role-button" type="primary" icon="form-outlined" @click="getJobDetail(record)">YAML</c-button>
+                        <c-button style="color:crimson" class="role-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delJob)">删除</c-button>
                     </template>
                 </template>
             </a-table>
@@ -48,7 +48,7 @@
             :confirm-loading="appLoading"
             cancelText="取消"
             okText="更新"
-            @ok="updateJob">
+            @ok="updateRole">
             <codemirror
                 :value="contentYaml"
                 border
@@ -92,7 +92,7 @@
                     label="apiGroup"
                     name="createApiGroup"
                     :rules="[{ required: true, message: '请输入apiGroup' }]">
-                    <a-input style="color:khaki" v-model:value="createApiGroup" placeholder="core|apps" />
+                    <a-input style="color:khaki" v-model:value="createApiGroups" placeholder="core|apps" />
                 </a-form-item>
                 <a-form-item
                     label="resources"

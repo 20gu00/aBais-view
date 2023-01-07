@@ -31,8 +31,8 @@
                         <a-tag style="color:linen;font-size:medium">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button style="margin-bottom:5px;color:aqua" class="namespace-button" type="primary" icon="form-outlined" @click="getNamespaceDetail(record)">YAML</c-button>
-                        <c-button style="color:crimson" class="namespace-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delNamespace)">删除</c-button>
+                        <c-button style="margin-bottom:5px;color:aqua" class="clusterrole-button" type="primary" icon="form-outlined" @click="getNamespaceDetail(record)">YAML</c-button>
+                        <c-button style="color:crimson" class="clusterrole-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delNamespace)">删除</c-button>
                     </template>
                 </template>
             </a-table>
@@ -45,7 +45,8 @@
             cancelText="取消"
             okText="更新"
             width="900px"
-            :ok-button-props="{ disabled: true }">
+            @ok="updateClusterRole">
+            <!-- :ok-button-props="{ disabled: true }"> -->
             <!-- codemirror编辑器 -->
             <!-- border 带边框 -->
             <!-- options  编辑器配置 -->
@@ -396,7 +397,7 @@ export default({
 </script>
 
 <style scoped>
-    .namespace-button {
+    .clusterrole-button {
         margin-right: 5px;
     }
     .ant-form-item {
