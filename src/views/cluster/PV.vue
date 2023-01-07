@@ -191,6 +191,34 @@ export default({
                 width: 200
             }
         ])
+        // const updatePvData = reactive({
+        //     url: common.k8sPvUpdate,
+        //     params: {
+        //         //namespace: '',
+        //         content: '',
+        //         cluster: ''
+        //     }
+        // })
+        //更新daemonSet
+        // function updatePv() {
+        //     appLoading.value = true
+        //     //将yaml格式的daemonSet对象转为json
+        //     let content = JSON.stringify(transObj(contentYaml.value))
+        //     //updateClusterRoleData.params.namespace = namespaceValue.value
+        //     updatePvData.params.content = content
+        //     updatePvData.params.cluster = localStorage.getItem('k8s_cluster')
+        //     httpClient.put(updatePvData.url, updatePvData.params)
+        //     .then(res => {
+        //         message.success(res.msg)
+        //     })
+        //     .catch(res => {
+        //         message.error(res.msg)
+        //     })
+        //     .finally(() => {
+        //         getPvList()
+        //         yamlModal.value = false
+        //     })
+        // }
         //常用项
         const appLoading = ref(false)
         const searchValue = ref('')
@@ -458,7 +486,8 @@ export default({
             ...toRefs(createPv),
             handleAdd,
             onClose,
-            formSubmit
+            formSubmit,
+            //updatePv,
         }
     },
 })

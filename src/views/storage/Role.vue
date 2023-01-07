@@ -25,7 +25,7 @@
                         <a-popover
                             :overlayStyle="{width:'520px'}">
                             <template #content>
-                                <div style="color:aquamarine; width:500px;height:500px;word-break:break-all;overflow-y:auto;">{{ record.rule }}</div>
+                                <div style="color:aquamarine; width:500px;height:500px;word-break:break-all;overflow-y:auto;">{{ record.rules }}</div>
                             </template>
                             <file-text-outlined style="font-size: 15px;" />
                         </a-popover>
@@ -34,8 +34,8 @@
                         <a-tag style="color:linen;font-size:medium">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button style="margin-bottom:5px;color:aqua" class="role-button" type="primary" icon="form-outlined" @click="getJobDetail(record)">YAML</c-button>
-                        <c-button style="color:crimson" class="role-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delJob)">删除</c-button>
+                        <c-button style="margin-bottom:5px;color:aqua" class="role-button" type="primary" icon="form-outlined" @click="getRoleDetail(record)">YAML</c-button>
+                        <c-button style="color:crimson" class="role-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delRole)">删除</c-button>
                     </template>
                 </template>
             </a-table>
@@ -90,7 +90,7 @@
                 </a-form-item>
                 <a-form-item
                     label="apiGroup"
-                    name="createApiGroup"
+                    name="createApiGroups"
                     :rules="[{ required: true, message: '请输入apiGroup' }]">
                     <a-input style="color:khaki" v-model:value="createApiGroups" placeholder="core|apps" />
                 </a-form-item>
@@ -136,7 +136,7 @@ export default({
         //column
         const columns = ref([
             {
-                title: 'Job',
+                title: 'Role',
                 dataIndex: 'name'
             },
             {
@@ -279,7 +279,7 @@ export default({
         //详情
         function getRoleDetail(e) {
             appLoading.value = true
-            roleDetailData.params.job_name = e.metadata.name
+            roleDetailData.params.role_name = e.metadata.name
             roleDetailData.params.namespace = namespaceValue.value
             roleDetailData.params.cluster = localStorage.getItem('k8s_cluster')
             httpClient.get(roleDetailData.url, {params: roleDetailData.params})
@@ -318,7 +318,7 @@ export default({
         //删除daemonSet
         function delRole(name) {
             appLoading.value = true
-            delRoleData.params.job_name = name
+            delRoleData.params.role_name = name
             delRoleData.params.namespace = namespaceValue.value
             delRoleData.params.cluster = localStorage.getItem('k8s_cluster')
             httpClient.delete(delRoleData.url, {data: delRoleData.params})
