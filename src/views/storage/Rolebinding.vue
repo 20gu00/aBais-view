@@ -14,7 +14,7 @@
                 style="font-size:15px;" 
                 :loading="appLoading" 
                 :columns="columns" 
-                :dataSource="roleList"
+                :dataSource="rolebindingList"
                 :pagination="pagination"
                 @change="handleTableChange">
                 <template #bodyCell="{ column, record }">
@@ -27,7 +27,7 @@
                                 <template #content>
                                     <span>{{ val.name }}</span>
                                 </template>
-                                <a-tag style="margin-bottom:5px;cursor:pointer;font-size:medium" color="blue">{{ ellipsis(key + ":" +val, 15) }}</a-tag>
+                                <a-tag style="margin-bottom:5px;cursor:pointer;font-size:medium" color="blue">{{ ellipsis(val.name, 15) }}</a-tag>
                             </a-popover>
                         </div>
                     </template>
@@ -35,8 +35,8 @@
                         <a-tag style="color:linen;font-size:medium">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button style="margin-bottom:5px;color:aqua" class="job-button" type="primary" icon="form-outlined" @click="getJobDetail(record)">YAML</c-button>
-                        <c-button style="color:crimson" class="job-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delJob)">删除</c-button>
+                        <c-button style="margin-bottom:5px;color:aqua" class="rolebinding-button" type="primary" icon="form-outlined" @click="getRoleBindingDetail(record)">YAML</c-button>
+                        <c-button style="color:crimson" class="rolebinding-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delRoleBinding)">删除</c-button>
                     </template>
                 </template>
             </a-table>
@@ -61,7 +61,7 @@
         </a-modal>
         <a-drawer
             v-model:visible="createDrawer"
-            title="创建RoleBinding"
+            title="创建Role Binding"
             width="800px"
             :footer-style="{ textAlign: 'right' }"
             @close="onClose">
@@ -70,7 +70,7 @@
                 <a-form-item
                     label="name"
                     name="createName"
-                    :rules="[{ required: true, message: '请输入RoleBinding名称' }]">
+                    :rules="[{ required: true, message: '请输入Role Binding名称' }]">
                     <a-input style="color:khaki" v-model:value="createName" />
                 </a-form-item>
                 <a-form-item
@@ -90,22 +90,32 @@
                     </a-select>
                 </a-form-item>
                 <a-form-item
-                    label="apiGroup"
-                    name="createApiGroup"
-                    :rules="[{ required: true, message: '请输入apiGroup' }]">
-                    <a-input style="color:khaki" v-model:value="createApiGroups" placeholder="core|apps" />
+                    label="role name"
+                    name="createRoleName"
+                    :rules="[{ required: true, message: '请输入role name' }]">
+                    <a-input style="color:khaki" v-model:value="createRoleName"/>
                 </a-form-item>
                 <a-form-item
-                    label="resources"
-                    name="createResources"
-                    :rules="[{ required: true, message: '请输入resources' }]">
-                    <a-input style="color:khaki" v-model:value="createResources" placeholder="deployments|replicasets|pods" />
+                    label="sa name"
+                    name="createSaName"
+                    :rules="[{ required: true, message: '请输入sa name' }]">
+                    <a-input style="color:khaki" v-model:value="createSaName" />
                 </a-form-item>
                 <a-form-item
-                    label="verbs"
-                    name="createVerbs"
-                    :rules="[{ required: true, message: '请输入verbs' }]">
-                    <a-input style="color:khaki" v-model:value="createVerbs" placeholder="get|list|watch|create|update|patch|delete或者*"/>
+                    style="color:khaki"
+                    label="sa namespace"
+                    name="createSaNamespace"
+                    :rules="[{ required: true, message: '请选择sa namespace' }]">
+                    <a-select show-search  style="width:140px;color:khaki" v-model:value="createSaNamespace" placeholder="请选择">
+                        <!--可选项 遍历-->
+                        <a-select-option
+                            style="color:khaki"
+                            v-for="(item, index) in namespaceList"
+                            :key="index"
+                            :value="item.metadata.name">
+                            {{ item.metadata.name }}
+                        </a-select-option>
+                    </a-select>
                 </a-form-item>
             </a-form>
             <template #footer>
@@ -137,11 +147,11 @@ export default({
         //column
         const columns = ref([
             {
-                title: 'Job',
+                title: 'role binding',
                 dataIndex: 'name'
             },
             {
-                title: 'sa',
+                title: 'service account',
                 dataIndex: 'saname'
             },
             {
@@ -193,7 +203,7 @@ export default({
         const rolebindingDetailData =  reactive({
             url: common.k8sRoleBindingDetail,
             params: {
-                rolebinding_name: '',
+                roleBinding_name: '',
                 namespace: '',
                 cluster: ''
             }
@@ -280,7 +290,7 @@ export default({
         //详情
         function getRoleBindingDetail(e) {
             appLoading.value = true
-            rolebindingDetailData.params.job_name = e.metadata.name
+            rolebindingDetailData.params.roleBinding_name = e.metadata.name
             rolebindingDetailData.params.namespace = namespaceValue.value
             rolebindingDetailData.params.cluster = localStorage.getItem('k8s_cluster')
             httpClient.get(rolebindingDetailData.url, {params: rolebindingDetailData.params})
@@ -319,7 +329,7 @@ export default({
         //删除daemonSet
         function delRoleBinding(name) {
             appLoading.value = true
-            delRoleBindingData.params.job_name = name
+            delRoleBindingData.params.rolebinding_name = name
             delRoleBindingData.params.namespace = namespaceValue.value
             delRoleBindingData.params.cluster = localStorage.getItem('k8s_cluster')
             httpClient.delete(delRoleBindingData.url, {data: delRoleBindingData.params})

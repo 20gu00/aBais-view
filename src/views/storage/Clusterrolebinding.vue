@@ -12,7 +12,7 @@
                 style="font-size:15px;" 
                 :loading="appLoading" 
                 :columns="columns" 
-                :dataSource="pvList"
+                :dataSource="clusterrolebindingList"
                 :pagination="pagination"
                 @change="handleTableChange">
                 <template #bodyCell="{ column, record }">
@@ -23,8 +23,8 @@
                         <a-tag style="color:linen;font-size:medium">{{ timeTrans(record.metadata.creationTimestamp) }}</a-tag>
                     </template>
                     <template v-if="column.key === 'action'">
-                        <c-button style="margin-bottom:5px;color:aqua" class="clusterrolebinding-button" type="primary" icon="form-outlined" @click="getPvDetail(record)">YAML</c-button>
-                        <c-button style="color:crimson" class="clusterrolebinding-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delPv)">删除</c-button>
+                        <c-button style="margin-bottom:5px;color:aqua" class="clusterrolebinding-button" type="primary" icon="form-outlined" @click="getClusterRoleBindingDetail(record)">YAML</c-button>
+                        <c-button style="color:crimson" class="clusterrolebinding-button" type="error" icon="delete-outlined" @click="showConfirm('删除', record.metadata.name, delClusterRoleBinding)">删除</c-button>
                     </template>
                 </template>
             </a-table>
@@ -78,10 +78,20 @@
                     <a-input style="color:khaki" v-model:value="createSaName" />
                 </a-form-item>
                 <a-form-item
+                    style="color:khaki"
                     label="sa namespace"
-                    name="createSaNamespacee"
-                    :rules="[{ required: true, message: '请输入sa namespace' }]">
-                    <a-input style="color:khaki" v-model:value="createSaNamespace" />
+                    name="createSaNamespace"
+                    :rules="[{ required: true, message: '请选择sa namespace' }]">
+                    <a-select show-search  style="width:140px;color:khaki" v-model:value="createSaNamespace" placeholder="请选择">
+                        <!--可选项 遍历-->
+                        <a-select-option
+                            style="color:khaki"
+                            v-for="(item, index) in namespaceList"
+                            :key="index"
+                            :value="item.metadata.name">
+                            {{ item.metadata.name }}
+                        </a-select-option>
+                    </a-select>
                 </a-form-item>
             </a-form>
             <!--抽屉底部-->
@@ -99,7 +109,7 @@ import MainHead from '@/components/MainHead';
 import httpClient from '@/request';
 import common from "@/config";
 import { message } from 'ant-design-vue';
-//import yaml2obj from 'js-yaml';
+import yaml2obj from 'js-yaml';
 import json2yaml from 'json2yaml';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { Modal } from 'ant-design-vue';
@@ -159,7 +169,7 @@ export default({
         const clusterrolebindingDetailData =  reactive({
             url: common.k8sClusterRoleBindingDetail,
             params: {
-                clusterrolebinding_name: '',
+                clusterroleBinding_name: '',
                 cluster: ''
             }
         })
@@ -179,9 +189,9 @@ export default({
             return json2yaml.stringify(content)
         }
         //yaml转对象
-        // function transObj(content) {
-        //     return yaml2obj.load(content)
-        // }
+        function transObj(content) {
+            return yaml2obj.load(content)
+        }
         function timeTrans(timestamp) {
             let date = new Date(new Date(timestamp).getTime() + 8 * 3600 * 1000)
             date = date.toJSON();
@@ -229,7 +239,7 @@ export default({
         //详情
         function getClusterRoleBindingDetail(e) {
             appLoading.value = true
-            clusterrolebindingDetailData.params.pv_name = e.metadata.name
+            clusterrolebindingDetailData.params.clusterroleBinding_name = e.metadata.name
             clusterrolebindingDetailData.params.cluster = localStorage.getItem('k8s_cluster')
             httpClient.get(clusterrolebindingDetailData.url, {params: clusterrolebindingDetailData.params})
             .then(res => {
@@ -247,7 +257,7 @@ export default({
         //删除pv
         function delClusterRoleBinding(name) {
             appLoading.value = true
-            delClusterRoleBindingData.params.pv_name = name
+            delClusterRoleBindingData.params.clusterrolebinding_name = name
             delClusterRoleBindingData.params.cluster = localStorage.getItem('k8s_cluster')
             httpClient.delete(delClusterRoleBindingData.url, {data: delClusterRoleBindingData.params})
             .then(res => {
@@ -341,6 +351,38 @@ export default({
                 createDrawer.value = false
             })
         }
+        const updateClusterRoleBindingData = reactive({
+            url: common.k8sClusterRoleBindingUpdate,
+            params: {
+                //namespace: '',
+                content: '',
+                cluster: ''
+            }
+        })
+        //更新daemonSet
+        function updateClusterRoleBinding() {
+            appLoading.value = true
+            //将yaml格式的daemonSet对象转为json
+            let content = JSON.stringify(transObj(contentYaml.value))
+            //updateClusterRoleData.params.namespace = namespaceValue.value
+            updateClusterRoleBindingData.params.content = content
+            updateClusterRoleBindingData.params.cluster = localStorage.getItem('k8s_cluster')
+            httpClient.put(updateClusterRoleBindingData.url, updateClusterRoleBindingData.params)
+            .then(res => {
+                message.success(res.msg)
+            })
+            .catch(res => {
+                message.error(res.msg)
+            })
+            .finally(() => {
+                getClusterRoleBindingList()
+                yamlModal.value = false
+            })
+        }
+        const namespaceList = ref([])
+        function getNamespaceList(val) {
+            namespaceList.value = val
+        }
         //关闭抽屉
         function onClose () {
             Modal.confirm({
@@ -372,6 +414,10 @@ export default({
             createDrawer,
             createClusterRoleBinding,
             formRef,
+            updateClusterRoleBindingData,
+            namespaceList,
+            getNamespaceList,
+            updateClusterRoleBinding,
             timeTrans,
             ellipsis,
             handleTableChange,
