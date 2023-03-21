@@ -62,7 +62,7 @@ export default({
             .then(res => {
                 localStorage.setItem('username', loginData.username);
                 localStorage.setItem('loginDate', moment().format('YYYY-MM-DD HH:mm:ss'));
-                let token = jwt.sign(loginData, 'adoodevops', { expiresIn: '10h' });
+                let token = jwt.sign(loginData, 'abaisjwt', { expiresIn: '10h' });
                 localStorage.setItem('token', token);
                 router.push('/');
                 message.success(res.msg)

@@ -249,7 +249,7 @@ router.beforeEach((to, from, next) => {
 //使用钩子函数对路由进行权限跳转
 router.beforeEach((to, from, next) => {
     //验证jwt token是否合法
-    jwt.verify(localStorage.getItem('token'), 'adoodevops', function (err) {
+    jwt.verify(localStorage.getItem('token'), 'abaisjwt', function (err) {
         if (to.path === '/login') {
             next()
         } else if (err) {

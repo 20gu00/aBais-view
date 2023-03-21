@@ -1,4 +1,5 @@
-const baseHost = 'http://47.97.164.42:9090'
+//const baseHost = 'http://47.97.164.42:9090'
+const baseHost = 'http://192.168.23.250:9090'
 export default {
     //登录
     //所有资源数据
