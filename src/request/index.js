@@ -5,7 +5,7 @@ const httpClient = axios.create({
     validateStatus(status) {
         return status >= 200 && status < 504 // 设置默认的合法的状态
     },
-    timeout: 20000   //超时时间10秒
+    timeout: 20000   //超时时间20秒
 });
 
 

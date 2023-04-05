@@ -15,6 +15,11 @@ const routes = [
         redirect: '/home' //重定向
     },
     {
+        path:'/register',
+        component:()=>import('@/views/common/Register.vue'),
+        meta: {title:"注册",requireAuth:false},
+    },
+    {
         path: '/login',  //url路径
         component: () => import('@/views/common/Login.vue'),  //视图组件
         meta: {title: "登录", requireAuth: false},  //meta元信息

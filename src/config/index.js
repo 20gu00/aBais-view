@@ -5,6 +5,7 @@ export default {
     //所有资源数据
     k8sAllRes: baseHost + '/api/v1/k8s/allresource',
     loginAuth: baseHost + '/api/v1/login',
+    registerUser:baseHost+'/api/v1/register',
     //cluster
     k8sClusterList: baseHost + '/api/v1/k8s/clusters',
     //event

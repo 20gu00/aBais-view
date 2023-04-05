@@ -5,7 +5,7 @@
                 <a-collapse-panel style="font-size:22px;" key="1" header="Overview">
                     <a-row class="home-row1">
                         <!-- <a-col :span="7">
-                            <div style="font-size:19px;">k8s运维平台</div>
+                            <div style="font-size:19px;">k8s运维管理系统</div>
                             <div style="text-align:center;font-size:30px;font-weight:bold;">aBais</div>
                         </a-col> -->
                         <!-- <a-divider type="vertical" style="height: 70px; background-color: rgb(89, 104, 173)" /> -->
@@ -176,13 +176,14 @@ export default ({
             pagination.pagesize = val.pageSize
             getEventList()
         }
+        //时间格式
         function timeTrans(date) {
             date = date.substring(0, 19).replace('T', ' ')
             date = date.substring(0, 19).replace('+08:00', '')
             return date 
         }
         function getEventList () {
-            //关闭定时器
+            //关闭定时器,清空
             clearInterval(timer)
             timer = null
             if (searchValue.value) {
@@ -217,6 +218,7 @@ export default ({
         }
         //声明周期钩子
         onMounted(() => {
+            //设置计时器
             timer = setInterval(() => {
                 if (localStorage.getItem('cluster_num') && localStorage.getItem('k8s_cluster')) {
                     clusterNum.value = localStorage.getItem('cluster_num')
