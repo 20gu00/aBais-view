@@ -21,7 +21,10 @@
                     <a-input-password v-model:value="loginData.password" />
                 </a-form-item>
                 <a-form-item style="text-align:center;margin-bottom:10px;">
-                    <c-button style="width:100%;" type="primary" size="normal" icon="user-outlined" @click="onCheck()">登录</c-button>
+                    <c-button style="width:100%;" type="primary" size="normal" icon="LoginOutlined" @click="onCheck()">登录</c-button>
+                </a-form-item>
+                <a-form-item style="text-align:center;margin-bottom:10px;">
+                    <c-button style="width:100%;" type="primary" size="normal" icon="UserAddOutlined" @click="onCheckRegister()">注册</c-button>
                 </a-form-item>
             </a-form>
         </a-card>
@@ -71,12 +74,23 @@ export default({
                 message.error(res.msg)
             })
         }
+        const onCheckRegister = () =>{
+            try {
+                message.info("a");
+                router.push('/register');
+                message.info("aa");
+            } catch (errorInfo) {
+                console.log('Failed:', errorInfo);
+            }
+        }
         return {
+            router,
             kubeLogo,
             loginData,
             formRef,
             handleLogin,
-            onCheck
+            onCheck,
+            onCheckRegister,
         }
     },
 })
