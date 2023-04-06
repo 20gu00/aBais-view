@@ -76,9 +76,9 @@ export default({
         }
         const onCheckRegister = () =>{
             try {
-                message.info("a");
+                //message.info("a");
                 router.push('/register');
-                message.info("aa");
+                //message.info("aa");
             } catch (errorInfo) {
                 console.log('Failed:', errorInfo);
             }
