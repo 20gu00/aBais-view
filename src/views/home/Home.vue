@@ -24,7 +24,7 @@
                             <a-col :span="4" style="margin-bottom:10px;">
                                 <a-card :bordered="false" style="background-color:cornflowerblue" :bodyStyle="{padding: '20px'}">
                                     <!--float:right-->
-                                    <div style="float:left;margin:15px 10px 0px">
+                                    <div style="float:left;margin:15px 10px 10px">
                                         <a-progress
                                         :width="40"
                                         :strokeWidth="18"
@@ -35,7 +35,7 @@
                                         />
                                     </div>
                                     <div style="text-align:center;">
-                                        <span style="font-size:20px;color:black">{{ key }}</span>
+                                        <span style="font-size:15px;color:black">{{ key }}</span>
                                         <br/>
                                         <span style="font-size:30px;font-weight:bold;">{{ resourceList[key] }}</span>
                                     </div>
