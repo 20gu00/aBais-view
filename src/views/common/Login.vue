@@ -4,7 +4,7 @@
             <template #title>
                 <div class="login-card-header">
                     <img style="height:25px;margin:0 8px 5px 0;" :src="kubeLogo" />
-                    <span>KubeA</span>
+                    <span>aBais</span>
                 </div>
             </template>
             <a-form ref="formRef" :model="loginData" :label-col="{ span: 5 }">

@@ -257,7 +257,10 @@ router.beforeEach((to, from, next) => {
     jwt.verify(localStorage.getItem('token'), 'abaisjwt', function (err) {
         if (to.path === '/login') {
             next()
-        } else if (err) {
+        } else if (to.path === '/register'){
+            next()
+        }
+        else if (err) {
             next('/login');
         } else {
             next();
