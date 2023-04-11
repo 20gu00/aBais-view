@@ -34,7 +34,8 @@ export default {
     k8sPodCreate: baseHost + '/api/v1/k8s/pod/create',
     k8sPodNumNp: baseHost + '/api/v1/k8s/pod/numns',
     //terminal
-    k8sTerminalWs: 'ws://localhost:9091/ws',
+    //k8sTerminalWs: 'ws://localhost:9091/ws',
+    k8sTerminalWs: 'ws://192.168.23.250:9091/ws',
     //ingress
     k8sIngressList: baseHost + '/api/v1/k8s/ingresses',
     k8sIngressDetail: baseHost + '/api/v1/k8s/ingress/detail',
