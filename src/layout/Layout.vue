@@ -22,7 +22,9 @@
                     <img style="height:40px;border-radius:50%;margin-right:5px;" :src="avator"/>
                     <a-dropdown style="margin-top: 10px;" :overlayStyle="{paddingTop: '20px'}">
                         <a class="ant-dropdown-link" style="color:bisque" @click.prevent>
-                            Admin
+                            <!--Admin-->
+                            <!-- localStorage.getItem('namespace') -->
+                            {{username}}
                             <down-outlined />
                         </a>
                         <template #overlay>
@@ -30,9 +32,9 @@
                                 <a-menu-item>
                                 <a @click="logout()">退出登录</a>
                                 </a-menu-item>
-                                <a-menu-item>
+                                <!-- <a-menu-item>
                                 <a href="javascript:;">修改密码</a>
-                                </a-menu-item>
+                                </a-menu-item> -->
                             </a-menu>
                         </template>
                     </a-dropdown>
@@ -125,12 +127,14 @@
 import { onBeforeMount, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router'
 import kubeLogo from '@/assets/k8s.png';
+//import login from '@/views/common/Login';
 import avator from '@/assets/ava.png';
 import httpClient from '@/request';
 import common from "@/config";
 import { message } from 'ant-design-vue';
 export default ({
     setup() {
+        const username=localStorage.getItem("username")
         const appLoading = ref(false)
         const routers = ref([])
         const openKeys = ref([])
@@ -221,6 +225,7 @@ export default ({
         })
         //将变量和方法返回出去才能使用
         return {
+            username,
             kubeLogo,
             avator,
             collapsed,
