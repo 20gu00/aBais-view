@@ -100,7 +100,7 @@ export default({
 <style scoped>
     .login {
         height: 100vh;
-        background-image: url(../../assets/login3.webp);
+        background-image: url(../../assets/login4.webp);
         background-size: 100%;
         display: grid;
         place-items: center;
