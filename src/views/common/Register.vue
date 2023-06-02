@@ -84,7 +84,7 @@ export default({
 <style scoped>
     .register {
         height: 100vh;
-        background-image: url(../../assets/login4.webp);
+        background-image: url(../../assets/login5.webp);
         background-size: 100%;
         display: grid;
         place-items: center;

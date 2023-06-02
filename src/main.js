@@ -6,7 +6,9 @@ import router from './router'
 //引入ant组件
 import Antd from 'ant-design-vue'
 //引入ant暗黑风格主题以及图标 本地的~@
+//import 'antd/dist/antd.css'
 import 'ant-design-vue/dist/antd.dark.css';
+//import 'ant-design-vue/dist/antd.css'
 // button
 // @src(webpack配置)
 import CButton from '@/components/CButton'

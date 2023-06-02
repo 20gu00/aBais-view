@@ -117,7 +117,7 @@
                 </a-layout-content>
                 <!-- footer部分 -->
                 <a-layout-footer style="text-align: center;color:mediumspringgreen">
-                    ©2023 Created by 20gu00(github同名)
+                    ©2023 Created by 20gu00
                 </a-layout-footer>
             </a-layout>
         </a-layout>

@@ -155,7 +155,7 @@
                 <!-- footer部分 底部 -->
                 <!--居中-->
                 <a-layout-footer style="text-align: center">
-                    ©2022 Created by 20gu00(github同名)
+                    ©2022 Created by 20gu00
                 </a-layout-footer>
             </a-layout>
         </a-layout>
